@@ -10,8 +10,12 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 const app = express();
 
 const allowedOrigins = [env.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'];
+// --- حل الـ CORS المتوافق مع إصدار Express الحديث ---
 app.use(cors()); 
-app.options('*', cors());
+
+// التعديل هنا: نستخدم regex للمسار الشامل بدل النجمة العادية
+app.options(/(.*)/, cors()); 
+// ----------------------------------------------
 // استبدل جزء الـ cors القديم بهذا الكود:
 // app.use(
 //   cors({
