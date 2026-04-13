@@ -124,6 +124,7 @@ function StatCard({ color, icon, label, value }) {
 }
 
 export default AdminDashboardPage;
+//5
 // import { BookOpen, CheckCircle, Clock, Home } from 'lucide-react';
 
 // function AdminDashboardPage({ dashboardStats, fatwas, onOpenFatwas }) {
