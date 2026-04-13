@@ -1,7 +1,5 @@
-
 const express = require('express');
-const cors = require('cors');
-
+const cors = require('cors'); // استدعاء واحد فقط يكفي
 const authRoutes = require('./routes/authRoutes');
 const fatwaRoutes = require('./routes/fatwaRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -10,6 +8,7 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 
+// قائمة الروابط المسموح لها بالوصول
 const allowedOrigins = [
   'https://alluring-nourishment-production-1017.up.railway.app',
   'http://localhost:5173',
@@ -18,32 +17,29 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    const cleanOrigin = origin
-  .trim()
-  .toLowerCase()
-  .replace(/\/$/, '');
-
-    const isAllowed =
-      cleanOrigin.endsWith('.railway.app') ||
-      cleanOrigin.includes('railway.app');
-
-    if (isAllowed) {
-      return callback(null, true);
+    // إذا لم يكن هناك origin (مثل Postman) أو كان localhost أو على railway
+    if (!origin || 
+        origin.includes('localhost') || 
+        origin.includes('127.0.0.1') || 
+        origin.endsWith('.railway.app')) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS blocked:', origin);
+      callback(new Error('Not allowed by CORS'));
     }
-
-    console.log('❌ CORS blocked:', origin);
-    return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
+  optionsSuccessStatus: 200 // مهم لبعض المتصفحات القديمة وطلبات الـ OPTIONS
 };
 
+// تفعيل الـ CORS كـ middleware أساسي
 app.use(cors(corsOptions));
 
-// مهم جدًا: استخدم نفس الإعداد
-app.options(/.*/, cors(corsOptions));
+// مهم جداً للتعامل مع طلبات الـ Preflight (OPTIONS)
+// بدلاً من النجمة، نستخدم هذا التعبير ليعني "كل المسارات"
+app.options(/(.*)/, cors(corsOptions));
 
+// باقي إعدادات السيرفر
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
@@ -55,6 +51,7 @@ app.use('/api/fatwas', fatwaRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 
+// معالجة الأخطاء
 app.use(notFound);
 app.use(errorHandler);
 
