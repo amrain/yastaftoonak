@@ -19,9 +19,9 @@ function PublicApp({ controller }) {
     navigate(routes[page] || '/');
     controller.setIsMenuOpen(false);
   };
-
   return (
-    <div dir="rtl" className={`min-h-screen font-tajawal transition-colors duration-300 ${controller.themeColors.background} ${controller.themeColors.textMain}`}>
+    // أضفنا flex و flex-col هنا للحاوية الكبيرة
+    <div dir="rtl" className={`min-h-screen flex flex-col font-tajawal transition-colors duration-300 ${controller.themeColors.background} ${controller.themeColors.textMain}`}>
       <Navbar
         darkMode={controller.darkMode}
         isMenuOpen={controller.isMenuOpen}
@@ -31,13 +31,33 @@ function PublicApp({ controller }) {
         pathname={location.pathname}
       />
 
-      <main>
+      {/* أضفنا flex-grow هنا لكي يتمدد المحتوى ويدفع الفوتر للأسفل */}
+      <main className="flex-grow">
         <Outlet />
       </main>
 
-      <Footer   onNavigate={handleNavigate} />
+      <Footer onNavigate={handleNavigate} />
     </div>
   );
+
+  // return (
+  //   <div dir="rtl" className={`min-h-screen font-tajawal transition-colors duration-300 ${controller.themeColors.background} ${controller.themeColors.textMain}`}>
+  //     <Navbar
+  //       darkMode={controller.darkMode}
+  //       isMenuOpen={controller.isMenuOpen}
+  //       onNavigate={handleNavigate}
+  //       onToggleDarkMode={() => controller.setDarkMode(!controller.darkMode)}
+  //       onToggleMenu={() => controller.setIsMenuOpen(!controller.isMenuOpen)}
+  //       pathname={location.pathname}
+  //     />
+
+  //     <main>
+  //       <Outlet />
+  //     </main>
+
+  //     <Footer   onNavigate={handleNavigate} />
+  //   </div>
+  // );
 }
 
 export default PublicApp;

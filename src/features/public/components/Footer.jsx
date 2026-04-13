@@ -1,5 +1,7 @@
 import { BookOpen, Send } from 'lucide-react';
 import IslamicStar from '../../../shared/icons/IslamicStar';
+import logo from '../../../assets/image/logo.png'; // قم بتعديل المسار حسب مكان الصورة لديك
+
 
 function Footer({  onNavigate }) {
   return (
@@ -12,7 +14,11 @@ function Footer({  onNavigate }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center mb-6">
-              <BookOpen className="h-7 w-7 text-amber-500 ml-2" />
+               <img 
+                  src={logo} 
+                  alt="شعار يستفتونك" 
+                  className="h-10 w-auto ml-2 object-contain" // أضفنا ml-2 بدل mr-2 لأن الموقع عربي
+                />
               <h3 className="text-2xl font-bold text-white font-reem tracking-wider">يستفتونك</h3>
             </div>
             <p className="text-sm">

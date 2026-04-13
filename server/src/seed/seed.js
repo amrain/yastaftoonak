@@ -7,7 +7,8 @@ const { connectDatabase } = require('../config/db');
 
 async function runSeed() {
   try {
-    await connectDatabase();
+     await connectDatabase();
+    // await mongoose.connect("mongodb+srv://abd3mrain_db_user:SrIXA19w45U5cgln@yastaftoonak-cluster.phprhle.mongodb.net/yastaftoonak");
 
     // 1. تنظيف البيانات القديمة لضمان عدم التكرار
     await User.deleteMany({});

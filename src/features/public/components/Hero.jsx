@@ -1,5 +1,7 @@
 import { Send } from 'lucide-react';
 import IslamicStar from '../../../shared/icons/IslamicStar';
+import logo from '../../../assets/image/logo.png'; // قم بتعديل المسار حسب مكان الصورة لديك
+
 
 function Hero() {
   return (
@@ -7,9 +9,12 @@ function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <div className="inline-block mb-4 p-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-          <IslamicStar className="w-8 h-8 text-amber-400 animate-pulse" />
-        </div>
+        <img 
+    src={logo} 
+    alt="الشعار" 
+    className="mx-auto mb-2 w-36 h-36 object-contain drop-shadow-2xl"
+  />
+       
         <h1 className="text-5xl md:text-7xl font-bold mb-6 font-reem tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-amber-200 drop-shadow-lg leading-[1.5] pb-2">
           يستفتونك
         </h1>

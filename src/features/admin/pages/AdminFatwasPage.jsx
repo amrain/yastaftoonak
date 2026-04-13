@@ -139,7 +139,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
           <table className="w-full text-right">
             <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-300">
               <tr>
-                <th className="p-4 font-medium">المعرف</th>
+                {/* <th className="p-4 font-medium">المعرف</th> */}
                 <th className="p-4 font-medium">المستفتي</th>
                 <th className="p-4 font-medium max-w-xs">السؤال</th>
                 <th className="p-4 font-medium">الحالة</th>
@@ -151,7 +151,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
               {displayedFatwas.length > 0 ? (
                 displayedFatwas.map((fatwa) => (
                   <tr key={fatwa.id} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition">
-                    <td className="p-4 text-sm">#{fatwa.id}</td>
+                    {/* <td className="p-4 text-sm">#{fatwa.id}</td> */}
                     <td className="p-4">
                       <div className="font-medium">{fatwa.name || 'مجهول'}</div>
                       <div className="text-xs text-gray-500">{fatwa.location} • {fatwa.gender} • {fatwa.age}س</div>
