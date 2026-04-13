@@ -18,17 +18,15 @@ async function startServer() {
   try {
     await connectDatabase();
     
-    // التعديل هنا: نستخدم البورت اللي بتعطيه المنصة أو البورت اللي في ملف الإعدادات
     const PORT = process.env.PORT || env.port || 5000;
 
-    app.listen(PORT, () => {
-      // شلنا http://127.0.0.1 عشان الرابط حيتغير لما ترفعه
-      console.log(`API server running on port: ${PORT}`);
+    // أضفنا '0.0.0.0' هنا لربط السيرفر بالعالم الخارجي
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ API server running on port: ${PORT}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error.message);
+    console.error('❌ Failed to start server:', error.message);
     process.exit(1);
   }
 }
-
 startServer();
