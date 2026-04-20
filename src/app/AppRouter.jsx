@@ -70,7 +70,15 @@ function RouterEffects() {
 
 function RequireAdmin({ controller, children }) {
   if (!controller.authReady) {
-    return <div className="min-h-screen flex items-center justify-center">جاري التحقق من الجلسة...</div>;
+    /* تم التعديل هنا: إضافة dir="rtl" وتغميق الخط بـ font-bold أو font-black */
+    return (
+      <div 
+        className="min-h-screen flex items-center justify-center text-2xl font-black text-emerald-800" 
+        dir="rtl"
+      >
+        جاري التحقق من الجلسة...
+      </div>
+    );
   }
 
   if (!controller.currentUser) {

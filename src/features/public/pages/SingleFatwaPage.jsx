@@ -80,13 +80,22 @@ function SingleFatwaPage({ fatwas, themeColors }) {
         </div>
 
         <div className="p-6 md:p-10">
-          <div className="mb-8 relative">
+          {/* <div className="mb-8 relative">
             <div className="absolute -right-4 md:-right-6 top-0 bottom-0 w-1 bg-amber-400 rounded-l-md" />
             <h3 className={`!font-salaf text-2xl md:text-3xl font-normal ${themeColors.textMain} leading-loose text-justify pr-4 md:pr-6`}>
               <span className="text-amber-500 ml-3 font-sans text-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">س</span>
               {fatwa.question}
             </h3>
-          </div>
+          </div> */}
+          <div className="mb-8 relative">
+  {/* الخط الجانبي الأصفر */}
+  <div className="absolute -right-4 md:-right-6 top-0 bottom-0 w-1 bg-amber-400 rounded-l-md" />
+  
+  <h3 className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-loose text-justify pr-4 md:pr-6`}>
+    <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">س</span>
+    {fatwa.question}
+  </h3>
+</div>
 
           <div className="flex items-center justify-center my-8 opacity-40">
             <div className="h-px w-20 bg-gradient-to-l from-transparent to-emerald-600" />
