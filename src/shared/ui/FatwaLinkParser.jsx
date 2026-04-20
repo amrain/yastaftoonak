@@ -1,8 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 
 // مكون لتحليل النص وإنشاء روابط للفتاوى
-export function FatwaLinkParser({ text, className = '' }) {
+export function FatwaLinkParser({ text, fatwas = [], className = '' }) {
   const navigate = useNavigate();
+  const serialToIdMap = new Map(
+    (fatwas || [])
+      .filter((item) => item?.serialNumber !== undefined && item?.id)
+      .map((item) => [String(item.serialNumber), item.id])
+  );
 
   if (!text || typeof text !== 'string') return <span className={className}>{text || ''}</span>;
 
@@ -35,6 +40,13 @@ export function FatwaLinkParser({ text, className = '' }) {
       }
 
       const fatwaNumber = numberMatch.replace('#', '');
+      const linkedFatwaId = serialToIdMap.get(fatwaNumber);
+
+      if (!linkedFatwaId) {
+        parts.push(fullMatch);
+        lastIndex = match.index + match[0].length;
+        continue;
+      }
 
       // إنشاء رابط قابل للنقر
       parts.push(
@@ -42,7 +54,7 @@ export function FatwaLinkParser({ text, className = '' }) {
           key={`fatwa-link-${match.index}`}
           onClick={(e) => {
             e.preventDefault();
-            navigate(`/fatwas/${fatwaNumber}`);
+            navigate(`/fatwas/${linkedFatwaId}`);
           }}
           className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 underline decoration-2 decoration-emerald-300 hover:decoration-emerald-500 transition-colors font-bold cursor-pointer"
           title={`الانتقال إلى الفتوى رقم ${fatwaNumber}`}

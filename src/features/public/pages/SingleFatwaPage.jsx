@@ -106,7 +106,7 @@ function SingleFatwaPage({ fatwas, themeColors }) {  const navigate = useNavigat
           <div className="bg-emerald-50/50 dark:bg-emerald-900/10 p-6 md:p-8 rounded-tl-3xl rounded-br-3xl border border-emerald-100 dark:border-emerald-800/50">
             <p className={`!font-salaf ${themeColors.textMain} text-xl md:text-2xl leading-[2] text-justify pr-4 md:pr-6`}>
               <span className="text-emerald-600 dark:text-emerald-400 font-sans font-bold ml-3 text-lg border border-emerald-200 bg-emerald-100 dark:bg-emerald-900/50 w-9 h-9 inline-flex items-center justify-center rounded-full shadow-sm">ج</span>
-              <FatwaLinkParser text={fatwa.answer} />
+              <FatwaLinkParser text={fatwa.answer} fatwas={fatwas} />
             </p>
           </div>
         </div>

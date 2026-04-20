@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Fatwa = require('../models/Fatwa');
 
 async function listFatwas(req, res) {
@@ -21,11 +22,16 @@ async function listFatwas(req, res) {
 }
 
 async function getFatwaById(req, res) {
-  let fatwa = await Fatwa.findById(req.params.id);
+  const requestedId = req.params.id;
+  let fatwa = null;
+
+  if (mongoose.isValidObjectId(requestedId)) {
+    fatwa = await Fatwa.findById(requestedId);
+  }
 
   // إذا لم يتم العثور على الفتوى بالـ _id، جرب البحث بالـ serialNumber
   if (!fatwa) {
-    const serialNumber = parseInt(req.params.id);
+    const serialNumber = parseInt(requestedId, 10);
     if (!isNaN(serialNumber)) {
       fatwa = await Fatwa.findOne({ serialNumber });
     }
