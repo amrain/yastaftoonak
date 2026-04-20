@@ -112,7 +112,7 @@ function SingleFatwaPage({ fatwas, themeColors }) {
         </div>
 
         <div className="p-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800">
-          {/* <span>رقم الفتوى: #{fatwa.id}</span> */}
+          {fatwa.serialNumber ? <span>رقم الفتوى: #{fatwa.serialNumber}</span> : <span />}
           {fatwa.answeredBy && <span>أجاب: {fatwa.answeredBy}</span>}
         </div>
       </div>

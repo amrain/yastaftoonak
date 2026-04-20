@@ -1,6 +1,7 @@
 const app = require('./app');
 const env = require('./config/env');
 const { connectDatabase } = require('./config/db');
+const { backfillFatwaSerialNumbers } = require('./utils/backfillFatwaSerialNumbers');
 
 // async function startServer() {
 //   try {
@@ -17,6 +18,7 @@ const { connectDatabase } = require('./config/db');
 async function startServer() {
   try {
     await connectDatabase();
+    await backfillFatwaSerialNumbers();
     
     const PORT = process.env.PORT || env.port || 5000;
 

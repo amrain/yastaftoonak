@@ -3,6 +3,8 @@ const env = require('../config/env');
 const User = require('../models/User');
 const Fatwa = require('../models/Fatwa');
 const Category = require('../models/Category'); // تأكد من وجود الموديل في هذا المسار
+const Counter = require('../models/Counter');
+const { FATWA_SERIAL_COUNTER_ID } = require('../utils/counters');
 const { connectDatabase } = require('../config/db');
 
 async function runSeed() {
@@ -14,6 +16,7 @@ async function runSeed() {
     await User.deleteMany({});
     await Fatwa.deleteMany({});
     await Category.deleteMany({});
+    await Counter.deleteOne({ _id: FATWA_SERIAL_COUNTER_ID });
     console.log('🧹 تم تنظيف قاعدة البيانات بنجاح.');
 
     // 2. إدخال التصنيفات الافتراضية
@@ -37,8 +40,8 @@ async function runSeed() {
     });
     console.log('👤 تم إنشاء الحسابات (Admin & Sheikh).');
 
-    // 4. إدخال فتاوى تجريبية مرتبطة بالتصنيفات
-    await Fatwa.insertMany([
+    // 4. إدخال فتاوى تجريبية (مع أرقام تسلسلية تلقائية)
+    const seedFatwas = [
       {
         name: 'أحمد محمود',
         age: 35,
@@ -66,19 +69,55 @@ async function runSeed() {
         updatedAt: new Date('2023-10-26'),
       },
       {
+        name: 'محمد',
+        age: 32,
+        gender: 'ذكر',
+        location: 'الضفة الغربية',
+        question: 'هل يجوز إخراج زكاة الفطر نقداً؟',
+        answer:
+          'الأصل إخراجها طعاماً كما ورد في السنة، وأجاز بعض أهل العلم إخراجها نقداً للحاجة والمصلحة. والأحوط إخراجها طعاماً، والله أعلم.',
+        category: 'عبادات',
+        status: 'published',
+        answeredBy: sheikh.name,
+        createdAt: new Date('2024-01-10'),
+        updatedAt: new Date('2024-01-10'),
+      },
+      {
+        name: 'سائلة',
+        age: 24,
+        gender: 'أنثى',
+        location: 'خارج فلسطين',
+        question: 'ما حكم قراءة الفاتحة للمأموم خلف الإمام في الصلاة الجهرية؟',
+        answer:
+          'في المسألة خلاف مشهور، والراجح أن المأموم يقرأ الفاتحة في السرية، وأما الجهرية فيقرأها في سكتات الإمام إن تيسر، وإلا فالإنصات مقدم. والله أعلم.',
+        category: 'عبادات',
+        status: 'published',
+        answeredBy: sheikh.name,
+        createdAt: new Date('2024-02-05'),
+        updatedAt: new Date('2024-02-05'),
+      },
+      {
         name: 'فاعل خير',
         age: 40,
         gender: 'ذكر',
         location: 'الداخل المحتل',
         question: 'هل يجوز إعطاء الزكاة للإخوة إذا كانوا فقراء؟',
         answer: '',
-        category: '',
+        category: 'معاملات',
         status: 'new',
-        createdAt: new Date('2023-11-01'),
-        updatedAt: new Date('2023-11-01'),
+        wantsToPublish: true,
+        createdAt: new Date('2026-04-20'),
+        updatedAt: new Date('2026-04-20'),
       },
-    ]);
+    ];
+
+    const created = [];
+    for (const doc of seedFatwas) {
+      // eslint-disable-next-line no-await-in-loop
+      created.push(await Fatwa.create(doc));
+    }
     console.log('📝 تم إدخال الفتاوى التجريبية.');
+    console.log('🔢 أرقام الفتاوى:', created.map((fatwa) => fatwa.serialNumber).join(', '));
 
     console.log('---');
     console.log(`🚀 تم اكتمال الـ Seed بنجاح على قاعدة البيانات: ${env.mongoUri}`);

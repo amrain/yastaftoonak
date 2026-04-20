@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
+const Counter = require('./Counter');
+const { FATWA_SERIAL_COUNTER_ID } = require('../utils/counters');
 
 const fatwaSchema = new mongoose.Schema(
   {
+    serialNumber: { type: Number, unique: true, index: true },
     name: { type: String, trim: true, default: '' },
     age: { type: Number, required: true, min: 1 },
     gender: { type: String, enum: ['ذكر', 'أنثى'], required: true },
@@ -20,6 +23,20 @@ const fatwaSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+fatwaSchema.pre('validate', async function setSerialNumber() {
+  if (!this.isNew || this.serialNumber) {
+    return;
+  }
+
+  const counter = await Counter.findOneAndUpdate(
+    { _id: FATWA_SERIAL_COUNTER_ID },
+    { $inc: { seq: 1 } },
+    { upsert: true, returnDocument: 'after' },
+  );
+
+  this.serialNumber = counter.seq;
+});
 
 fatwaSchema.set('toJSON', {
   transform: (_, ret) => {

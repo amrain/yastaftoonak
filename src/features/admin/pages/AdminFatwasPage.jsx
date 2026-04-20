@@ -93,9 +93,9 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
   };
 
   const exportCSV = () => {
-    const headers = ['المعرف', 'الاسم', 'الايميل', 'العمر', 'الجنس', 'المكان', 'السؤال', 'الجواب', 'التصنيف', 'الحالة', 'التاريخ'];
+    const headers = ['الرقم التسلسلي', 'الاسم', 'الايميل', 'العمر', 'الجنس', 'المكان', 'السؤال', 'الجواب', 'التصنيف', 'الحالة', 'التاريخ'];
     const rows = displayedFatwas.map((fatwa) => [
-      fatwa.id,
+      fatwa.serialNumber ?? '',
       fatwa.name || 'مجهول',
       fatwa.email || 'لا يوجد',
       fatwa.age,
@@ -278,7 +278,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                  <div className="bg-emerald-600 text-white p-2 rounded-xl shadow-lg shadow-emerald-200">
                     <MessageSquare size={20} />
                  </div>
-                 الرد على الفتوى #{selectedFatwa.id}
+                 الرد على الفتوى #{selectedFatwa.serialNumber ?? '—'}
               </div>
               <button onClick={() => setSelectedFatwa(null)} className="text-gray-400 hover:text-red-500 transition-colors">
                 <XCircle size={28} />
