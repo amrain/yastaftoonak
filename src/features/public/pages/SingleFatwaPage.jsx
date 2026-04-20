@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchFatwaById } from '../../../services/api/fatwaApi';
 import IslamicStar from '../../../shared/icons/IslamicStar';
+import { FatwaLinkParser } from '../../../shared/ui/FatwaLinkParser';
 
-function SingleFatwaPage({ fatwas, themeColors }) {
-  const navigate = useNavigate();
+function SingleFatwaPage({ fatwas, themeColors }) {  const navigate = useNavigate();
   const { fatwaId } = useParams();
   const [remoteFatwa, setRemoteFatwa] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,7 @@ function SingleFatwaPage({ fatwas, themeColors }) {
   {/* الخط الجانبي الأصفر */}
   <div className="absolute -right-4 md:-right-6 top-0 bottom-0 w-1 bg-amber-400 rounded-l-md" />
   
-  <h3 className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-loose text-justify pr-4 md:pr-6`}>
+  <h3 className={`!font-salaf text-2xl md:text-3xl font-normal ${themeColors.textMain} leading-[2] text-justify pr-4 md:pr-6`}>
     <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">س</span>
     {fatwa.question}
   </h3>
@@ -106,7 +106,7 @@ function SingleFatwaPage({ fatwas, themeColors }) {
           <div className="bg-emerald-50/50 dark:bg-emerald-900/10 p-6 md:p-8 rounded-tl-3xl rounded-br-3xl border border-emerald-100 dark:border-emerald-800/50">
             <p className={`!font-salaf ${themeColors.textMain} text-xl md:text-2xl leading-[2] text-justify pr-4 md:pr-6`}>
               <span className="text-emerald-600 dark:text-emerald-400 font-sans font-bold ml-3 text-lg border border-emerald-200 bg-emerald-100 dark:bg-emerald-900/50 w-9 h-9 inline-flex items-center justify-center rounded-full shadow-sm">ج</span>
-              {fatwa.answer}
+              <FatwaLinkParser text={fatwa.answer} />
             </p>
           </div>
         </div>

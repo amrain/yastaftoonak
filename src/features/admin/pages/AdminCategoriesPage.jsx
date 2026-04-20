@@ -1,14 +1,75 @@
-import { Tag, Edit2, Trash2, X, Plus, LayoutGrid, Info } from 'lucide-react';
+import { Tag, Edit2, Trash2, X, Plus, LayoutGrid, Info, GripVertical } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import ConfirmDialog from '../../../shared/ui/ConfirmDialog';
 import { useToast } from '../../../shared/ui/ToastProvider';
 
-function AdminCategoriesPage({ categories = [], saveCategoryRecord, deleteCategoryById }) {
+function AdminCategoriesPage({ categories = [], saveCategoryRecord, reorderCategories, deleteCategoryById }) {
   const { addToast } = useToast();
   const [selectedCat, setSelectedCat] = useState(null);
   const [catName, setCatName] = useState('');
   const [catToDelete, setCatToDelete] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localCategories, setLocalCategories] = useState([]);
+  const [dragIndex, setDragIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
+
+  const normalizeName = (name = '') => String(name).trim().toLowerCase();
+  const isOtherCategory = (category) => /^(أخرى|other)$/i.test(normalizeName(category.name));
+
+  const moveOtherLast = (cats) => {
+    const others = cats.filter((cat) => isOtherCategory(cat));
+    const rest = cats.filter((cat) => !isOtherCategory(cat));
+    return [...rest, ...others];
+  };
+
+  useEffect(() => {
+    setLocalCategories(moveOtherLast(categories));
+  }, [categories]);
+
+  const reorderItems = (list, from, to) => {
+    const copy = [...list];
+    const [item] = copy.splice(from, 1);
+    copy.splice(to, 0, item);
+    return copy;
+  };
+
+  const onDragStart = (index) => {
+    setDragIndex(index);
+  };
+
+  const onDragOver = (index, event) => {
+    event.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const onDrop = (index) => {
+    if (dragIndex === null || dragIndex === index) {
+      setDragIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const updated = reorderItems(localCategories, dragIndex, index);
+    setLocalCategories(moveOtherLast(updated));
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const saveOrder = async () => {
+    if (!reorderCategories || isSavingOrder) return;
+
+    const orderedIds = localCategories.map((category) => category._id || category.id);
+    try {
+      setIsSavingOrder(true);
+      await reorderCategories(orderedIds);
+      addToast('تم حفظ ترتيب التصنيفات بنجاح.', 'success');
+    } catch (error) {
+      addToast(error.message || 'فشل حفظ ترتيب التصنيفات.', 'error');
+    } finally {
+      setIsSavingOrder(false);
+    }
+  };
 
   const openModal = (cat = null) => {
     if (cat) {
@@ -86,38 +147,82 @@ function AdminCategoriesPage({ categories = [], saveCategoryRecord, deleteCatego
       </div>
 
       {/* Grid */}
-      {categories && categories.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat) => (
-            <div 
-              key={cat._id || cat.id} 
-              className="group bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all relative overflow-hidden"
-            >
-              <div className="flex items-center space-x-3 space-x-reverse relative z-10">
-                <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl text-emerald-600">
-                  <Tag size={20} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 font-tajawal">{cat.name}</h3>
-              </div>
-
-              <div className="mt-8 flex items-center justify-end space-x-3 space-x-reverse border-t pt-4 relative z-20">
-                <button 
-                  type="button"
-                  onClick={() => openModal(cat)} 
-                  className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                >
-                  <Edit2 size={18} />
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setCatToDelete(cat)} 
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
+      {localCategories && localCategories.length > 0 ? (
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-black text-gray-700 dark:text-gray-200">اسحب التصنيفات وأعد ترتيبها هنا</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">يمكنك التحكم في ترتيب ظهور التصنيفات في لوحة التحكم والواجهة العامة.</p>
             </div>
-          ))}
+            <button
+              type="button"
+              onClick={saveOrder}
+              disabled={isSavingOrder}
+              className={`inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-black transition ${isSavingOrder ? 'bg-gray-300 text-gray-700 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
+            >
+              حفظ الترتيب
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {localCategories.map((cat, index) => {
+              const isOther = isOtherCategory(cat);
+              const active = dragOverIndex === index;
+
+              return (
+                <div
+                  key={cat._id || cat.id}
+                  draggable={!isOther}
+                  onDragStart={() => !isOther && onDragStart(index)}
+                  onDragOver={(event) => onDragOver(index, event)}
+                  onDrop={() => onDrop(index)}
+                  onDragEnd={() => {
+                    setDragIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  className={`bg-white dark:bg-gray-800 p-6 rounded-3xl border ${active ? 'border-emerald-300 shadow-lg' : 'border-gray-200 dark:border-gray-700'} hover:border-emerald-200 transition-all cursor-move ${isOther ? 'opacity-90' : ''}`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl text-emerald-600">
+                        <Tag size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 font-tajawal">{cat.name}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {isOther ? 'هذا التصنيف سيظهر دائماً في النهاية' : `الترتيب الحالي ${index + 1}`}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {!isOther && (
+                        <span className="text-sm text-gray-400 flex items-center gap-1">
+                          <GripVertical size={18} /> سحب
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => openModal(cat)}
+                        className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        title="تعديل"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCatToDelete(cat)}
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="حذف"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : (
         <div className="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border-2 border-dashed border-gray-200">
@@ -128,10 +233,10 @@ function AdminCategoriesPage({ categories = [], saveCategoryRecord, deleteCatego
 
       {/* Modal */}
       {selectedCat && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-emerald-950/40 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-emerald-950/40 backdrop-blur-sm p-4" dir="rtl">
           <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95">
             <div className="p-6 bg-emerald-600 text-white flex justify-between items-center">
-              <h3 className="text-xl font-bold font-tajawal">
+              <h3 className="text-2xl font-black font-tajawal">
                 {selectedCat === 'new' ? 'إضافة قسم جديد' : 'تحديث اسم القسم'}
               </h3>
               <button onClick={() => setSelectedCat(null)}><X size={24} /></button>
@@ -140,7 +245,7 @@ function AdminCategoriesPage({ categories = [], saveCategoryRecord, deleteCatego
               <input 
                 type="text" autoFocus value={catName} 
                 onChange={(e) => setCatName(e.target.value)} 
-                className="w-full p-4 rounded-2xl border-2 border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 outline-none focus:border-emerald-500 text-lg font-tajawal text-black dark:text-white" 
+                className="w-full p-4 rounded-2xl border-2 border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 outline-none focus:border-emerald-500 text-xl font-bold font-tajawal text-black dark:text-white" 
               />
               <div className="flex gap-3">
                 <button 

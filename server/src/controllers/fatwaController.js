@@ -21,7 +21,15 @@ async function listFatwas(req, res) {
 }
 
 async function getFatwaById(req, res) {
-  const fatwa = await Fatwa.findById(req.params.id);
+  let fatwa = await Fatwa.findById(req.params.id);
+
+  // إذا لم يتم العثور على الفتوى بالـ _id، جرب البحث بالـ serialNumber
+  if (!fatwa) {
+    const serialNumber = parseInt(req.params.id);
+    if (!isNaN(serialNumber)) {
+      fatwa = await Fatwa.findOne({ serialNumber });
+    }
+  }
 
   if (!fatwa) {
     return res.status(404).json({ message: 'الفتوى غير موجودة.' });

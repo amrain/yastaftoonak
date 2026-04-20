@@ -136,9 +136,9 @@ function AdminUsersPage({ currentUser, deleteUserById, saveUserRecord, users }) 
       {/* Modal - User Form */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" dir="rtl">
-          <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
             <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-emerald-50/30 dark:bg-gray-700/50">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+              <h3 className="text-2xl font-black text-gray-800 dark:text-white">
                 {selectedUser === 'new' ? 'إضافة مستخدم جديد' : 'تعديل بيانات المستخدم'}
               </h3>
               <button onClick={() => setSelectedUser(null)} className="text-gray-400 hover:text-red-500 transition-colors">
@@ -148,42 +148,42 @@ function AdminUsersPage({ currentUser, deleteUserById, saveUserRecord, users }) 
             
             <div className="p-6 space-y-5">
               <div className="space-y-1">
-                <label className="text-sm font-bold text-gray-600 dark:text-gray-400">الاسم الكامل (يظهر للعامة)</label>
+                <label className="text-base font-bold text-gray-700 dark:text-gray-300">الاسم الكامل (يظهر للعامة)</label>
                 <div className="relative">
                   <User className="absolute right-3 top-3.5 text-gray-400" size={18} />
                   <input 
                     type="text" 
                     value={userData.name} 
                     onChange={(e) => setUserData({ ...userData, name: e.target.value })} 
-                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all" 
+                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all text-base font-bold" 
                     placeholder="مثال: الشيخ عبد الله أحمد" 
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-bold text-gray-600 dark:text-gray-400">اسم المستخدم</label>
+                <label className="text-base font-bold text-gray-700 dark:text-gray-300">اسم المستخدم</label>
                 <div className="relative">
                   <AtSign className="absolute right-3 top-3.5 text-gray-400" size={18} />
                   <input 
                     type="text" 
                     value={userData.username} 
                     onChange={(e) => setUserData({ ...userData, username: e.target.value })} 
-                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all text-left font-mono" 
+                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all text-left font-mono text-base font-bold" 
                     dir="ltr" 
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-bold text-gray-600 dark:text-gray-400">كلمة المرور</label>
+                <label className="text-base font-bold text-gray-700 dark:text-gray-300">كلمة المرور</label>
                 <div className="relative">
                   <Key className="absolute right-3 top-3.5 text-gray-400" size={18} />
                   <input 
                     type="password" 
                     value={userData.password} 
                     onChange={(e) => setUserData({ ...userData, password: e.target.value })} 
-                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all text-left font-mono" 
+                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all text-left font-mono text-base font-bold" 
                     dir="ltr" 
                     placeholder={selectedUser === 'new' ? 'كلمة المرور' : 'اتركها فارغة لعدم التغيير'}
                   />
@@ -191,13 +191,13 @@ function AdminUsersPage({ currentUser, deleteUserById, saveUserRecord, users }) 
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-bold text-gray-600 dark:text-gray-400">الصلاحية</label>
+                <label className="text-base font-bold text-gray-700 dark:text-gray-300">الصلاحية</label>
                 <div className="relative">
                   <ShieldCheck className="absolute right-3 top-3.5 text-gray-400" size={18} />
                   <select 
                     value={userData.role} 
                     onChange={(e) => setUserData({ ...userData, role: e.target.value })} 
-                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none appearance-none cursor-pointer"
+                    className="w-full pr-10 p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none appearance-none cursor-pointer text-base font-bold"
                   >
                     <option value="sheikh">مفتي / شيخ</option>
                     <option value="admin">مدير نظام</option>

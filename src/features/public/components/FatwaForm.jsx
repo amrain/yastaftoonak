@@ -147,7 +147,7 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
       </div>
 
       {showSuccessModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300" dir="rtl">
           <div className={`${themeColors.card} rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-t-4 border-emerald-500 relative overflow-hidden`}>
             <div className="absolute -top-10 -right-10 opacity-10 text-emerald-500">
               <IslamicStar className="w-32 h-32" />

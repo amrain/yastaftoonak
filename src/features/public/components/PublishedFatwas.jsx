@@ -73,12 +73,17 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
                     </span>
                     <span className={`text-xs ${themeColors.textMuted} flex items-center`}><Clock className="w-3 h-3 ml-1" />{fatwa.date}</span>
                   </div>
-                  <div className="mb-4 relative flex-1">
-  <h3 className={`!font-salaf text-lg md:text-xl font-normal ${themeColors.textMain} leading-loose text-justify pr-4 md:pr-6`}>
-    <span className="text-amber-500 ml-3 font-sans text-sm border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-7 h-7 inline-flex items-center justify-center rounded-full">س</span>
-    {fatwa.question}
-  </h3>
-</div>
+                  <div className="mb-5 relative flex-1">
+                    <div className="absolute -right-4 md:-right-6 top-0 bottom-0 w-1 bg-amber-400 rounded-l-md opacity-80" />
+                    <h3
+                      className={`!font-salaf text-2xl md:text-3xl font-normal ${themeColors.textMain} leading-[2] text-justify pr-4 md:pr-6`}
+                    >
+                      <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">
+                        س
+                      </span>
+                      {fatwa.question}
+                    </h3>
+                  </div>
                   <div className="pt-3 mt-auto border-t border-gray-100 dark:border-gray-700">
                     <span className="text-sm text-emerald-600 font-bold flex items-center group-hover:text-emerald-500 transition-colors">
                       الاطلاع على الإجابة <ChevronLeft className="w-4 h-4 mr-1" />
@@ -101,12 +106,16 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
                   </div>
                   <div className="md:hidden text-xs text-gray-500 flex items-center"><Clock className="w-3 h-3 ml-1" />{fatwa.date}</div>
                 </div>
-               <div className="flex-1 px-2 border-r-2 border-transparent group-hover:border-amber-400 transition-colors">
-  <h3 className={`!font-salaf text-lg md:text-xl font-normal ${themeColors.textMain} leading-loose text-justify pr-4 md:pr-6`}>
-    <span className="text-amber-500 ml-3 font-sans text-sm border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-7 h-7 inline-flex items-center justify-center rounded-full">س</span>
-    {fatwa.question}
-  </h3>
-</div>
+                <div className="flex-1 px-2 border-r-2 border-transparent group-hover:border-amber-400 transition-colors">
+                  <h3
+                    className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-[2] text-justify pr-4 md:pr-6`}
+                  >
+                    <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">
+                      س
+                    </span>
+                    {fatwa.question}
+                  </h3>
+                </div>
                 <div className="hidden md:flex flex-shrink-0 text-sm text-gray-500 items-center justify-end w-32 border-r border-gray-100 dark:border-gray-700 pr-4">
                   <Clock className="w-4 h-4 ml-1.5" /> {fatwa.date}
                 </div>

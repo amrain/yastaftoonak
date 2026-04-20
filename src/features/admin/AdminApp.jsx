@@ -144,6 +144,7 @@ function AdminApp({ controller }) {
             <AdminCategoriesPage 
               categories={controller.categories} 
               saveCategoryRecord={controller.saveCategoryRecord} 
+              reorderCategories={controller.reorderCategoryRecords}
               deleteCategoryById={controller.deleteCategoryById} 
             />
           )}

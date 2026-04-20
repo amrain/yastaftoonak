@@ -43,7 +43,10 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed top-4 left-4 z-[200] w-[min(24rem,calc(100vw-2rem))] space-y-3">
+      <div
+        className="fixed top-4 right-4 z-[260] w-[min(28rem,calc(100vw-2rem))] space-y-3"
+        dir="rtl"
+      >
         {toasts.map((toast) => {
           const style = TOAST_STYLES[toast.type] || TOAST_STYLES.info;
           const Icon = style.icon;
@@ -54,7 +57,7 @@ export function ToastProvider({ children }) {
               className={`flex items-start gap-3 rounded-2xl border-r-4 ${style.accent} bg-white/95 p-4 shadow-xl backdrop-blur dark:bg-gray-900/95`}
             >
               <Icon className={`mt-0.5 h-5 w-5 flex-shrink-0 ${style.iconColor}`} />
-              <p className="flex-1 text-sm leading-6 text-gray-800 dark:text-gray-100">{toast.message}</p>
+              <p className="flex-1 text-base font-bold leading-7 text-gray-800 dark:text-gray-100">{toast.message}</p>
               <button
                 type="button"
                 onClick={() => removeToast(toast.id)}

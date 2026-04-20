@@ -32,7 +32,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
     setReplyData({
       answer: fatwa.answer || '',
       category: fatwa.category || (categories.length > 0 ? categories[0].name : ''),
-      status: fatwa.status === 'new' ? 'published' : fatwa.status,
+      status: fatwa.status === 'answered' ? 'answered' : 'published',
     });
   };
 
@@ -184,6 +184,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
           <table className="w-full border-collapse">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600 text-gray-500">
               <tr>
+                <th className="p-5 font-bold text-sm text-center">رقم الفتوى</th>
                 <th className="p-5 font-bold text-sm text-right">المستفتي</th>
                 <th className="p-5 font-bold text-sm text-right">موضوع السؤال</th>
                 <th className="p-5 font-bold text-sm text-center">الحالة</th>
@@ -195,6 +196,9 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
               {displayedFatwas.length > 0 ? (
                 displayedFatwas.map((fatwa) => (
                   <tr key={fatwa.id} className="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/5 transition-colors group">
+                    <td className="p-5 text-center font-black text-emerald-800 dark:text-emerald-300">
+                      {fatwa.serialNumber != null ? `#${fatwa.serialNumber}` : '—'}
+                    </td>
                     <td className="p-5 text-right">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-700 shrink-0">
@@ -221,9 +225,10 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                       <span className={`inline-flex px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${
                         fatwa.status === 'new' ? 'bg-amber-100 text-amber-700' : 
                         fatwa.status === 'published' ? 'bg-emerald-100 text-emerald-700' : 
+                        fatwa.status === 'answered' ? 'bg-blue-100 text-blue-700' :
                         'bg-gray-100 text-gray-600'
                       }`}>
-                        {fatwa.status === 'new' ? 'جديدة' : fatwa.status === 'published' ? 'منشورة' : 'مسودة'}
+                        {fatwa.status === 'new' ? 'جديدة' : fatwa.status === 'published' ? 'منشورة' : fatwa.status === 'answered' ? 'رد خاص' : 'غير معروفة'}
                       </span>
                       {fatwa.answeredBy && (
                         <div className="text-[9px] text-emerald-600 mt-1.5 flex items-center justify-center gap-1">
@@ -256,7 +261,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="p-20 text-center text-gray-500">
+                  <td colSpan="6" className="p-20 text-center text-gray-500">
                     <div className="flex flex-col items-center opacity-40">
                       <FileText size={48} className="mb-2" />
                       <p className="text-lg font-bold">لا توجد فتاوى حالياً</p>
@@ -333,7 +338,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                 <h4 className="font-black text-gray-700 dark:text-gray-300 flex items-center gap-2">
                    <div className="w-1.5 h-6 bg-amber-400 rounded-full" /> نص السؤال الوارد:
                 </h4>
-                <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700 whitespace-pre-wrap text-xl leading-relaxed text-gray-800 dark:text-gray-200 italic shadow-inner">
+                <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700 whitespace-pre-wrap text-2xl leading-[2] font-bold text-gray-800 dark:text-gray-200 shadow-inner">
                   "{selectedFatwa.question}"
                 </div>
               </div>
@@ -390,7 +395,6 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                     >
                       <option value="published">✅ نشر للعامة في الأرشيف</option>
                       <option value="answered">🔒 إرسال رد خاص فقط</option>
-                      <option value="draft">📁 حفظ كمسودة للمراجعة</option>
                     </select>
                   </div>
                 </div>

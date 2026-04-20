@@ -5,10 +5,12 @@ import { fetchDashboardStats } from '../services/api/dashboardApi';
 import { fetchFatwas, removeFatwa, submitFatwa, updateFatwa } from '../services/api/fatwaApi';
 import { createUser, fetchUsers, removeUser, updateUser } from '../services/api/userApi';
 // ابحث عن هذا السطر في الأعلى وضف updateCategory
-import { fetchCategories, createCategory, removeCategory, updateCategory } from '../services/api/categoryApi';
+import { fetchCategories, createCategory, removeCategory, updateCategory, reorderCategories } from '../services/api/categoryApi';
 import { getStoredToken, setStoredToken } from '../services/api/client';
+import { useBusy } from '../shared/ui/BusyProvider';
 
 export function useAppController() {
+  const { withBusy } = useBusy();
   const [darkMode, setDarkMode] = useState(false);
   const [fatwas, setFatwas] = useState([]);
   const [users, setUsers] = useState([]);
@@ -40,13 +42,22 @@ export function useAppController() {
     };
   }, []);
 
+  const moveOtherLast = (cats) => {
+    const normalizeName = (name) => String(name || '').trim().toLowerCase();
+    const otherNames = ['أخرى', 'other'];
+    const others = cats.filter((cat) => otherNames.includes(normalizeName(cat.name)));
+    const rest = cats.filter((cat) => !otherNames.includes(normalizeName(cat.name)));
+    return [...rest, ...others];
+  };
+
   // دالة تحديث التصنيفات
   const refreshCategories = async () => {
     try {
       const data = await fetchCategories();
       const cats = data.categories || [];
-      setCategories(cats);
-      return cats;
+      const orderedCats = moveOtherLast(cats);
+      setCategories(orderedCats);
+      return orderedCats;
     } catch (error) {
       console.error("Error refreshing categories:", error);
       return [];
@@ -98,25 +109,33 @@ export function useAppController() {
 
   // --- دوال إدارة التصنيفات ---
   const saveCategoryRecord = async (targetId, payload) => {
-  try {
-    if (targetId === 'new') {
-      // حالة الإضافة
-      await createCategory(payload);
-    } else {
-      // حالة التعديل - الآن ستعمل لأننا أضفنا الدالة والشرط
-      await updateCategory(targetId, payload);
-    }
-    // تحديث القائمة في الواجهة بعد الحفظ
-    await refreshCategories();
-  } catch (error) {
-    console.error("Error saving category:", error);
-    throw error; // نمرر الخطأ لتظهره صفحة الـ UI (الـ Toast)
-  }
-};
+    return withBusy('جاري حفظ التصنيف...', async () => {
+      try {
+        if (targetId === 'new') {
+          await createCategory(payload);
+        } else {
+          await updateCategory(targetId, payload);
+        }
+        await refreshCategories();
+      } catch (error) {
+        console.error('Error saving category:', error);
+        throw error;
+      }
+    });
+  };
+
+  const reorderCategoryRecords = async (orderedIds) => {
+    return withBusy('جاري حفظ ترتيب التصنيفات...', async () => {
+      await reorderCategories(orderedIds);
+      await refreshCategories();
+    });
+  };
 
   const deleteCategoryById = async (id) => {
-    await removeCategory(id);
-    await refreshCategories();
+    await withBusy('جاري حذف التصنيف...', async () => {
+      await removeCategory(id);
+      await refreshCategories();
+    });
   };
 
   // --- دوال التحديث العامة ---
@@ -146,66 +165,80 @@ export function useAppController() {
 
   // --- إدارة الحساب (Login/Logout) ---
   const login = async (credentials) => {
-    const { token, user } = await loginRequest(credentials);
-    setStoredToken(token);
-    setCurrentUser(user);
-    const [{ fatwas: nextFatwas }, { users: nextUsers }, dashboardResponse] = await Promise.all([
-      fetchFatwas({ admin: true }),
-      fetchUsers(),
-      fetchDashboardStats(),
-      refreshCategories(),
-    ]);
-    setFatwas(nextFatwas);
-    setUsers(nextUsers);
-    setDashboardStats({
-      stats: dashboardResponse.stats,
-      latestFatwas: dashboardResponse.latestFatwas,
+    return withBusy('جاري تسجيل الدخول...', async () => {
+      const { token, user } = await loginRequest(credentials);
+      setStoredToken(token);
+      setCurrentUser(user);
+      const [{ fatwas: nextFatwas }, { users: nextUsers }, dashboardResponse] = await Promise.all([
+        fetchFatwas({ admin: true }),
+        fetchUsers(),
+        fetchDashboardStats(),
+        refreshCategories(),
+      ]);
+      setFatwas(nextFatwas);
+      setUsers(nextUsers);
+      setDashboardStats({
+        stats: dashboardResponse.stats,
+        latestFatwas: dashboardResponse.latestFatwas,
+      });
+      return user;
     });
-    return user;
   };
 
   const logout = async () => {
-    setStoredToken(null);
-    setCurrentUser(null);
-    setUsers([]);
-    setDashboardStats(null);
-    await refreshFatwas(false);
+    await withBusy('جاري تسجيل الخروج...', async () => {
+      setStoredToken(null);
+      setCurrentUser(null);
+      setUsers([]);
+      setDashboardStats(null);
+      await refreshFatwas(false);
+    });
   };
 
   // --- إدارة الفتاوى والمستخدمين ---
   const createFatwa = async (payload) => {
-    const result = await submitFatwa(payload);
-    await refreshFatwas(false);
-    setShowSuccessModal(true);
-    return result;
+    return withBusy('جاري إرسال الفتوى...', async () => {
+      const result = await submitFatwa(payload);
+      await refreshFatwas(false);
+      setShowSuccessModal(true);
+      return result;
+    });
   };
 
   const saveFatwaReply = async (fatwaId, payload) => {
-    const result = await updateFatwa(fatwaId, payload);
-    await refreshFatwas(true);
-    return result;
+    return withBusy('جاري حفظ الرد...', async () => {
+      const result = await updateFatwa(fatwaId, payload);
+      await refreshFatwas(true);
+      return result;
+    });
   };
 
   const deleteFatwaById = async (fatwaId) => {
-    await removeFatwa(fatwaId);
-    await refreshFatwas(true);
+    await withBusy('جاري حذف الفتوى...', async () => {
+      await removeFatwa(fatwaId);
+      await refreshFatwas(true);
+    });
   };
 
   const saveUserRecord = async (selectedUser, payload) => {
-    if (selectedUser === 'new') {
-      await createUser(payload);
-    } else {
-      const result = await updateUser(selectedUser.id, payload);
-      if (currentUser?.id === selectedUser.id) {
-        setCurrentUser(result.user);
+    await withBusy('جاري حفظ بيانات المستخدم...', async () => {
+      if (selectedUser === 'new') {
+        await createUser(payload);
+      } else {
+        const result = await updateUser(selectedUser.id, payload);
+        if (currentUser?.id === selectedUser.id) {
+          setCurrentUser(result.user);
+        }
       }
-    }
-    await refreshUsers();
+      await refreshUsers();
+    });
   };
 
   const deleteUserById = async (userId) => {
-    await removeUser(userId);
-    await refreshUsers();
+    await withBusy('جاري حذف المستخدم...', async () => {
+      await removeUser(userId);
+      await refreshUsers();
+    });
   };
 
   return {
@@ -229,6 +262,7 @@ export function useAppController() {
     saveFatwaReply,
     saveUserRecord,
     saveCategoryRecord, // تم تصدير دالة الحفظ
+    reorderCategoryRecords,
     deleteCategoryById, // تم تصدير دالة الحذف
     setCurrentUser,
     setDarkMode,

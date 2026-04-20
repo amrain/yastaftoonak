@@ -20,10 +20,17 @@ export function removeCategory(id) {
   });
 }
 
-// إضافة هذه الدالة في نهاية الملف
+// تحديث بيانات التصنيف
 export function updateCategory(id, payload) {
   return apiRequest(`/categories/${id}`, {
     method: 'PUT',
     body: JSON.stringify(payload),
+  });
+}
+
+export function reorderCategories(orderedIds) {
+  return apiRequest('/categories/reorder', {
+    method: 'PATCH',
+    body: JSON.stringify({ orderedIds }),
   });
 }

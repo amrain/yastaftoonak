@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 // const { listCategories, createCategory, deleteCategory } = require('../controllers/categoryController');
 const { requireAuth, requireRole } = require('../middleware/auth');
-const { listCategories, createCategory, deleteCategory, updateCategory } = require('../controllers/categoryController');
+const { listCategories, createCategory, deleteCategory, updateCategory, updateCategoryOrder } = require('../controllers/categoryController');
 // جلب التصنيفات متاح للجميع
 router.get('/', listCategories);
 
@@ -10,5 +10,6 @@ router.get('/', listCategories);
 router.post('/', requireAuth, requireRole('admin'), createCategory);
 router.delete('/:id', requireAuth, requireRole('admin'), deleteCategory);
 router.put('/:id', requireAuth, requireRole('admin'), updateCategory);
+router.patch('/reorder', requireAuth, requireRole('admin'), updateCategoryOrder);
 
 module.exports = router;

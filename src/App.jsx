@@ -1,11 +1,14 @@
 import { ToastProvider } from './shared/ui/ToastProvider';
 import AppRouter from './app/AppRouter';
+import { BusyProvider } from './shared/ui/BusyProvider';
 
 function App() {
   return (
-    <ToastProvider>
-      <AppRouter />
-    </ToastProvider>
+    <BusyProvider>
+      <ToastProvider>
+        <AppRouter />
+      </ToastProvider>
+    </BusyProvider>
   );
 }
 
