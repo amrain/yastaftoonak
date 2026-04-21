@@ -1,10 +1,7 @@
-
 import { ChevronLeft, ChevronRight, Clock, Filter, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-// تم حذف استيراد CATEGORIES الثابتة
 import IslamicStar from '../../../shared/icons/IslamicStar';
 
-// إضافة categories إلى الـ props المستلمة
 function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, themeColors, categories = [] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('الكل');
@@ -49,7 +46,6 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
             <Filter className={`absolute right-3 top-3.5 h-5 w-5 ${themeColors.textMuted}`} />
             <select value={filterCategory} onChange={(event) => setFilterCategory(event.target.value)} className={`w-full pr-10 p-4 rounded-xl border ${themeColors.border} ${themeColors.card} ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none appearance-none shadow-sm`}>
               <option value="الكل">جميع التصنيفات</option>
-              {/* تعديل هنا لاستخدام القائمة الديناميكية */}
               {categories.map((cat) => (
                 <option key={cat.id || cat._id || cat.name} value={cat.name}>
                   {cat.name}
@@ -73,18 +69,22 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
                     </span>
                     <span className={`text-xs ${themeColors.textMuted} flex items-center`}><Clock className="w-3 h-3 ml-1" />{fatwa.date}</span>
                   </div>
-                  <div className="mb-5 relative flex-1">
-                    <div className="absolute -right-4 md:-right-6 top-0 bottom-0 w-1 bg-amber-400 rounded-l-md opacity-80" />
+                  
+                  {/* حاوية نص السؤال مع تحديد الارتفاع والقص */}
+                  <div className="mb-6 relative flex-1 min-h-[120px]">
+                    <div className="absolute -right-2 top-0 bottom-0 w-1 bg-amber-400 rounded-full opacity-60" />
                     <h3
-                      className={`!font-salaf text-2xl md:text-3xl font-normal ${themeColors.textMain} leading-[2] text-justify pr-4 md:pr-6`}
+                      className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-[1.8] text-right px-4 line-clamp-3 overflow-hidden`}
+                      title={fatwa.question}
                     >
-                      <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">
+                      <span className="text-amber-500 ml-3 font-sans text-sm border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full flex-shrink-0 align-middle">
                         س
                       </span>
                       {fatwa.question}
                     </h3>
                   </div>
-                  <div className="pt-3 mt-auto border-t border-gray-100 dark:border-gray-700">
+
+                  <div className="pt-4 mt-auto border-t border-gray-100 dark:border-gray-700">
                     <span className="text-sm text-emerald-600 font-bold flex items-center group-hover:text-emerald-500 transition-colors">
                       الاطلاع على الإجابة <ChevronLeft className="w-4 h-4 mr-1" />
                     </span>
@@ -106,11 +106,11 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
                   </div>
                   <div className="md:hidden text-xs text-gray-500 flex items-center"><Clock className="w-3 h-3 ml-1" />{fatwa.date}</div>
                 </div>
-                <div className="flex-1 px-2 border-r-2 border-transparent group-hover:border-amber-400 transition-colors">
+                <div className="flex-1 px-4 border-r-2 border-transparent group-hover:border-amber-400 transition-colors overflow-hidden">
                   <h3
-                    className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-[2] text-justify pr-4 md:pr-6`}
+                    className={`!font-salaf text-lg md:text-xl font-normal ${themeColors.textMain} leading-relaxed text-right line-clamp-1`}
                   >
-                    <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">
+                    <span className="text-amber-500 ml-3 font-sans text-sm border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-7 h-7 inline-flex items-center justify-center rounded-full flex-shrink-0">
                       س
                     </span>
                     {fatwa.question}
@@ -158,10 +158,11 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
 export default PublishedFatwas;
 // import { ChevronLeft, ChevronRight, Clock, Filter, Search } from 'lucide-react';
 // import { useEffect, useMemo, useState } from 'react';
-// import { CATEGORIES } from '../../../app/constants';
+// // تم حذف استيراد CATEGORIES الثابتة
 // import IslamicStar from '../../../shared/icons/IslamicStar';
 
-// function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, themeColors }) {
+// // إضافة categories إلى الـ props المستلمة
+// function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, themeColors, categories = [] }) {
 //   const [searchTerm, setSearchTerm] = useState('');
 //   const [filterCategory, setFilterCategory] = useState('الكل');
 //   const [currentPage, setCurrentPage] = useState(1);
@@ -205,9 +206,10 @@ export default PublishedFatwas;
 //             <Filter className={`absolute right-3 top-3.5 h-5 w-5 ${themeColors.textMuted}`} />
 //             <select value={filterCategory} onChange={(event) => setFilterCategory(event.target.value)} className={`w-full pr-10 p-4 rounded-xl border ${themeColors.border} ${themeColors.card} ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none appearance-none shadow-sm`}>
 //               <option value="الكل">جميع التصنيفات</option>
-//               {CATEGORIES.map((category) => (
-//                 <option key={category} value={category}>
-//                   {category}
+//               {/* تعديل هنا لاستخدام القائمة الديناميكية */}
+//               {categories.map((cat) => (
+//                 <option key={cat.id || cat._id || cat.name} value={cat.name}>
+//                   {cat.name}
 //                 </option>
 //               ))}
 //             </select>
@@ -228,9 +230,14 @@ export default PublishedFatwas;
 //                     </span>
 //                     <span className={`text-xs ${themeColors.textMuted} flex items-center`}><Clock className="w-3 h-3 ml-1" />{fatwa.date}</span>
 //                   </div>
-//                   <div className="mb-4 relative flex-1">
-//                     <h3 className={`!font-salaf text-2xl md:text-3xl font-normal ${themeColors.textMain} leading-loose text-justify pr-4 md:pr-6`}>
-//                       <span className="text-amber-500 ml-3 font-sans text-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">س</span>
+//                   <div className="mb-5 relative flex-1">
+//                     <div className="absolute -right-4 md:-right-6 top-0 bottom-0 w-1 bg-amber-400 rounded-l-md opacity-80" />
+//                     <h3
+//                       className={`!font-salaf text-2xl md:text-3xl font-normal ${themeColors.textMain} leading-[2] text-justify pr-4 md:pr-6`}
+//                     >
+//                       <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">
+//                         س
+//                       </span>
 //                       {fatwa.question}
 //                     </h3>
 //                   </div>
@@ -249,7 +256,7 @@ export default PublishedFatwas;
 //               <div key={fatwa.id} onClick={() => onFatwaClick(fatwa.id)} className={`${themeColors.card} p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-800 transition-all duration-200 cursor-pointer flex flex-col md:flex-row md:items-center gap-4 group`}>
 //                 <div className="flex-shrink-0 flex items-center justify-between md:justify-start">
 //                   <div className="flex items-center">
-//                     <span className="text-gray-300 dark:text-gray-600 font-bold font-tajawal text-lg ml-4 w-6 text-center">{(currentPage - 1) * 15 + index + 1}</span>
+//                     <span className="text-gray-300 dark:text-gray-600 font-bold font-tajawal text-lg ml-4 w-6 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</span>
 //                     <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 px-3 py-1 rounded-full text-sm font-bold w-24 text-center">
 //                       {fatwa.category}
 //                     </span>
@@ -257,8 +264,12 @@ export default PublishedFatwas;
 //                   <div className="md:hidden text-xs text-gray-500 flex items-center"><Clock className="w-3 h-3 ml-1" />{fatwa.date}</div>
 //                 </div>
 //                 <div className="flex-1 px-2 border-r-2 border-transparent group-hover:border-amber-400 transition-colors">
-//                   <h3 className={`!font-salaf text-2xl md:text-3xl font-normal ${themeColors.textMain} leading-loose text-justify pr-4 md:pr-6`}>
-//                     <span className="text-amber-500 ml-3 font-sans text-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">س</span>
+//                   <h3
+//                     className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-[2] text-justify pr-4 md:pr-6`}
+//                   >
+//                     <span className="text-amber-500 ml-3 font-sans text-base border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full">
+//                       س
+//                     </span>
 //                     {fatwa.question}
 //                   </h3>
 //                 </div>
