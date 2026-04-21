@@ -48,7 +48,7 @@ function AdminApp({ controller }) {
         ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} 
         flex flex-col shadow-2xl md:shadow-none
       `}>
-        <div className="p-6 text-center border-b border-emerald-800 relative">
+        {/* <div className="p-6 text-center border-b border-emerald-800 relative">
           <button 
             className="md:hidden absolute left-4 top-4 text-emerald-300 hover:text-white"
             onClick={() => setIsSidebarOpen(false)}
@@ -61,7 +61,34 @@ function AdminApp({ controller }) {
             <h2 className="text-2xl font-bold font-tajawal">يستفتونك</h2>
           </button>
           <span className="text-base text-emerald-300 font-medium">لوحة التحكم</span>
-        </div>
+        </div> */}
+        <div className="p-6 flex flex-col items-center text-center border-b border-emerald-800 relative">
+  {/* زر الإغلاق للموبايل */}
+  <button 
+    className="md:hidden absolute left-4 top-4 text-emerald-300 hover:text-white"
+    onClick={() => setIsSidebarOpen(false)}
+  >
+    <X size={24} />
+  </button>
+
+  {/* حاوية الشعار والاسم */}
+  <button 
+    onClick={() => { navigate('/'); setIsSidebarOpen(false); }} 
+    className="flex flex-col items-center group hover:opacity-80 transition"
+  >
+    <img 
+      src={logo} 
+      alt="Logo" 
+      className="h-16 w-16 mb-2 object-contain" 
+    />
+    <h2 className="text-2xl font-bold font-tajawal text-white">يستفتونك</h2>
+  </button>
+
+  {/* نص لوحة التحكم */}
+  <span className="text-base text-emerald-300 font-medium mt-1">
+    لوحة التحكم
+  </span>
+</div>
 
         <nav className="flex-1 p-4 space-y-4">
           <SidebarButton 
@@ -113,9 +140,15 @@ function AdminApp({ controller }) {
             <span className="font-bold text-lg md:hidden">لوحة التحكم</span>
           </div>
 
-          <div className="hidden md:block text-xl font-tajawal font-bold text-emerald-800 dark:text-emerald-400">
+          {/* <div className="hidden md:block text-xl font-tajawal font-bold text-emerald-800 dark:text-emerald-400">
             {currentPage === 'dashboard' ? 'ملخص النظام' : currentPage === 'fatwas' ? 'إدارة الفتاوى' : 'إدارة المستخدمين والمشايخ'}
-          </div>
+          </div> */}
+          <div className="hidden md:block text-xl font-tajawal font-bold text-emerald-800 dark:text-emerald-400 text-center">
+    {currentPage === 'dashboard' ? 'ملخص النظام' : currentPage === 'fatwas' ? 'إدارة الفتاوى' : 'إدارة المستخدمين والمشايخ'}
+    
+    {/* أضفنا mt-3 لزيادة المسافة و mb-1 لضبط التوازن */}
+    <div className="w-16 h-1 bg-emerald-500 mx-auto rounded-full mt-3 mb-1" />
+</div>
 
           <div className="flex items-center gap-4">
             <button onClick={() => controller.setDarkMode(!controller.darkMode)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition">

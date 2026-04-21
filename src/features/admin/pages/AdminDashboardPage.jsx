@@ -15,10 +15,10 @@ function AdminDashboardPage({ dashboardStats, fatwas, onOpenFatwas }) {
   return (
     <div className="space-y-10 font-tajawal pb-10" dir="rtl">
       {/* العنوان الرئيسي للملخص */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-black text-emerald-800 dark:text-emerald-400">ملخص النظام</h2>
-        <div className="w-16 h-1 bg-emerald-500 mx-auto rounded-full" />
-      </div>
+      {/* <div className="text-center space-y-2"> */}
+        {/* <h2 className="text-2xl font-black text-emerald-800 dark:text-emerald-400">ملخص النظام</h2> */}
+        {/* <div className="w-16 h-1 bg-emerald-500 mx-auto rounded-full" /> */}
+      {/* </div> */}
 
       {/* بطاقات الإحصائيات (Stat Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
