@@ -33,6 +33,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
       answer: fatwa.answer || '',
       category: fatwa.category || (categories.length > 0 ? categories[0].name : ''),
       status: fatwa.status === 'answered' ? 'answered' : 'published',
+      answeredBy: fatwa.answeredBy || currentUser.name || '',
     });
   };
 
@@ -43,13 +44,17 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
     }
 
     const subject = `رد على فتوى رقم #${selectedFatwa.serialNumber ?? selectedFatwa.id ?? '—'}`;
-    const body = `السلام عليكم ورحمة الله وبركاته،\n\nبخصوص سؤالكم الموقر:\n"${selectedFatwa.question || ''}"\n\nإليكم الإجابة الشرعية:\n${replyData.answer || ''}\n\nنسأل الله لنا ولكم التوفيق.`;
+    const body = `السلام عليكم ورحمة الله وبركاته،\n\nبخصوص سؤالكم الموقر:\n"${selectedFatwa.question || ''}"\n\nإليكم الإجابة الشرعية:\n${replyData.answer || ''}\n\nالجهة المجيبة: ${replyData.answeredBy || 'غير محدد'}\n\nنسأل الله لنا ولكم التوفيق.`;
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-      selectedFatwa.email,
-    )}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    if (isMobile) {
+      const mailtoUrl = `mailto:${encodeURIComponent(selectedFatwa.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoUrl, '_blank');
+    } else {
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(selectedFatwa.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const handleDraftAnswer = async () => {
@@ -72,7 +77,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
     try {
       await saveFatwaReply(selectedFatwa.id, {
         ...replyData,
-        answeredBy: currentUser.name,
+        answeredBy: replyData.answeredBy || currentUser.name,
       });
       addToast('تم حفظ الرد بنجاح.', 'success');
       setSelectedFatwa(null);
@@ -93,7 +98,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
   };
 
   const exportCSV = () => {
-    const headers = ['الرقم التسلسلي', 'الاسم', 'الايميل', 'العمر', 'الجنس', 'المكان', 'السؤال', 'الجواب', 'التصنيف', 'الحالة', 'التاريخ'];
+    const headers = ['الرقم التسلسلي', 'الاسم', 'الايميل', 'العمر', 'الجنس', 'المكان', 'السؤال', 'الجواب', 'التصنيف', 'الحالة', 'التاريخ', 'الجهة المجيبة'];
     const rows = displayedFatwas.map((fatwa) => [
       fatwa.serialNumber ?? '',
       fatwa.name || 'مجهول',
@@ -106,12 +111,13 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
       fatwa.category,
       fatwa.status,
       fatwa.date,
+      fatwa.answeredBy || '',
     ]);
     const csvContent = `data:text/csv;charset=utf-8,\uFEFF${[headers.join(','), ...rows.map((row) => row.join(','))].join('\n')}`;
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'fatwas_export.csv');
+    link.setAttribute('download', 'fatwas_export.xlsx');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -129,7 +135,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
           onClick={exportCSV} 
           className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 px-5 py-2.5 rounded-xl shadow-sm hover:bg-emerald-50 transition-all font-bold"
         >
-          <Download size={20} /> تصدير البيانات (CSV)
+          <Download size={20} /> تصدير البيانات (Excel)
         </button>
       </div>
 
@@ -232,7 +238,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                       </span>
                       {fatwa.answeredBy && (
                         <div className="text-[9px] text-emerald-600 mt-1.5 flex items-center justify-center gap-1">
-                          <CheckCircle size={10} /> أجاب: {fatwa.answeredBy}
+                          <CheckCircle size={10} /> الجهة المجيبة: {fatwa.answeredBy}
                         </div>
                       )}
                     </td>
@@ -372,7 +378,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                 />
                 {aiAdminError && <p className="text-red-500 text-xs font-bold">{aiAdminError}</p>}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-600 dark:text-gray-400">تصنيف الفتوى:</label>
                     <select 
@@ -396,6 +402,16 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                       <option value="published">✅ نشر للعامة في الأرشيف</option>
                       <option value="answered">🔒 إرسال رد خاص فقط</option>
                     </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-600 dark:text-gray-400">الجهة المجيبة:</label>
+                    <input 
+                      type="text"
+                      value={replyData.answeredBy || ''} 
+                      onChange={(e) => setReplyData({ ...replyData, answeredBy: e.target.value })} 
+                      className="w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 font-bold outline-none focus:ring-2 focus:ring-emerald-500"
+                      placeholder="أدخل اسم الجهة المجيبة"
+                    />
                   </div>
                 </div>
               </div>

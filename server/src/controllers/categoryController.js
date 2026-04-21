@@ -34,7 +34,7 @@ async function createCategory(req, res) {
   }
 
   const maxOrderCategory = await Category.findOne().sort({ order: -1 }).select('order').lean();
-  const nextOrder = maxOrderCategory ? (maxOrderCategory.order || 0) + 1 : 1;
+  const nextOrder = maxOrderCategory ? (maxOrderCategory.order || 0) + 1 : 0;
 
   const category = await Category.create({ name, order: nextOrder });
   return res.status(201).json({ message: 'تمت إضافة التصنيف.', category });
@@ -60,7 +60,7 @@ async function updateCategoryOrder(req, res) {
   const bulkOps = orderedIds.map((id, index) => ({
     updateOne: {
       filter: { _id: id },
-      update: { $set: { order: index + 1 } },
+      update: { $set: { order: index } },
     },
   }));
 

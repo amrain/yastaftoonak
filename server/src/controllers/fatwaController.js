@@ -78,14 +78,16 @@ async function updateFatwa(req, res) {
     return res.status(404).json({ message: 'الفتوى غير موجودة.' });
   }
 
-  const allowedFields = ['answer', 'category', 'status'];
+  const allowedFields = ['answer', 'category', 'status', 'answeredBy'];
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
       fatwa[field] = req.body[field];
     }
   });
 
-  fatwa.answeredBy = req.user.name;
+  if (!fatwa.answeredBy) {
+    fatwa.answeredBy = req.user.name;
+  }
   await fatwa.save();
 
   return res.json({ message: 'تم تحديث الفتوى بنجاح.', fatwa });
