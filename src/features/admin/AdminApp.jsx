@@ -56,8 +56,10 @@ function AdminApp({ controller }) {
             <X size={24} />
           </button>
 
-          <img src={logo} alt="Logo" className="h-16 w-16 mx-auto mb-2 object-contain" />
-          <h2 className="text-2xl font-bold font-tajawal">يستفتونك</h2>
+          <button onClick={() => { navigate('/'); setIsSidebarOpen(false); }} className="block hover:opacity-80 transition">
+            <img src={logo} alt="Logo" className="h-16 w-16 mx-auto mb-2 object-contain" />
+            <h2 className="text-2xl font-bold font-tajawal">يستفتونك</h2>
+          </button>
           <span className="text-base text-emerald-300 font-medium">لوحة التحكم</span>
         </div>
 

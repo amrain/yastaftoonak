@@ -8,8 +8,8 @@ router.get('/', listCategories);
 
 // الإضافة والحذف للمدير فقط
 router.post('/', requireAuth, requireRole('admin'), createCategory);
+router.patch('/reorder', requireAuth, requireRole('admin'), updateCategoryOrder);
 router.delete('/:id', requireAuth, requireRole('admin'), deleteCategory);
 router.put('/:id', requireAuth, requireRole('admin'), updateCategory);
-router.patch('/reorder', requireAuth, requireRole('admin'), updateCategoryOrder);
 
 module.exports = router;

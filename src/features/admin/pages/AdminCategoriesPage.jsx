@@ -51,7 +51,7 @@ function AdminCategoriesPage({ categories = [], saveCategoryRecord, reorderCateg
     }
 
     const updated = reorderItems(localCategories, dragIndex, index);
-    setLocalCategories(moveOtherLast(updated));
+    setLocalCategories(updated);
     setDragIndex(null);
     setDragOverIndex(null);
   };
