@@ -22,7 +22,7 @@ function ContactPage({ themeColors }) {
         <a href="https://instagram.com/MOLTGAALELM" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-8 py-3 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white rounded-xl shadow-lg hover:opacity-90 hover:scale-105 transition-all duration-300"><FaInstagram size={24} /><span className="font-bold">انستقرام</span></a>
         <a href="https://x.com/Moltgaalelm" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-8 py-3 bg-[#000000] text-white rounded-xl shadow-lg hover:bg-[#1a1a1a] hover:scale-105 transition-all duration-300"><FaXTwitter size={22} /><span className="font-bold">منصة X</span></a>
         <a href="https://www.youtube.com/@moltgaalelm" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-8 py-3 bg-[#FF0000] text-white rounded-xl shadow-lg hover:bg-[#cc0000] hover:scale-105 transition-all duration-300"><FaYoutube size={26} /><span className="font-bold">يوتيوب</span></a>
-        <a href="https://wa.me/970XXXXXXXXX" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-8 py-3 bg-[#25D366] text-white rounded-xl shadow-lg hover:bg-[#20bd5a] hover:scale-105 transition-all duration-300"><FaWhatsapp size={24} /><span className="font-bold">واتساب</span></a>
+        <a href="https://chat.whatsapp.com/FO92BwTTau286ZykPzEl93?mode=gi_t" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-8 py-3 bg-[#25D366] text-white rounded-xl shadow-lg hover:bg-[#20bd5a] hover:scale-105 transition-all duration-300"><FaWhatsapp size={24} /><span className="font-bold">واتساب</span></a>
       </div>
     </div>
   );
