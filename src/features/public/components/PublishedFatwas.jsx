@@ -108,7 +108,7 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
                 </div>
                 <div className="flex-1 px-4 border-r-2 border-transparent group-hover:border-amber-400 transition-colors overflow-hidden">
                   <h3
-                    className={`!font-salaf text-lg md:text-xl font-normal ${themeColors.textMain} leading-relaxed text-right line-clamp-1`}
+                    className={`!font-salaf text-lg md:text-2xl font-normal ${themeColors.textMain} leading-relaxed text-right line-clamp-1`}
                   >
                     <span className="text-amber-500 ml-3 font-sans text-sm border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-7 h-7 inline-flex items-center justify-center rounded-full flex-shrink-0">
                       س
