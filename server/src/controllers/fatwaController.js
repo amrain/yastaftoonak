@@ -62,7 +62,7 @@ async function createFatwa(req, res) {
     location,
     question,
     wantsToPublish,
-    email: wantsToPublish ? '' : email,
+    email,
   });
 
   return res.status(201).json({
