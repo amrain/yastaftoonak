@@ -28,7 +28,7 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
 
     try {
       await createFatwa(formData);
-      addToast('تم إرسال الفتوى بنجاح.', 'success');
+      //addToast('تم إرسال السؤال بنجاح.', 'success');
       setFormData({
         name: '',
         age: '',
@@ -165,7 +165,7 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
             <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
               <CheckCircle size={40} />
             </div>
-            <h3 className={`text-2xl font-bold font-reem ${themeColors.primaryText} mb-3 relative z-10`}>تم استقبال الفتوى بنجاح</h3>
+            <h3 className={`text-2xl font-bold font-reem ${themeColors.primaryText} mb-3 relative z-10`}>تم إرسال سؤالك بنجاح</h3>
             <p className={`${themeColors.textMain} mb-8 font-tajawal text-lg relative z-10 leading-relaxed`}>
               سيتم الإجابة عنها في أقرب وقت ممكن إن شاء الله.
             </p>
