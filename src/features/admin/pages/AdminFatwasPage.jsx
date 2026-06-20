@@ -377,7 +377,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
               <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <label className="text-lg font-black text-emerald-900 dark:text-emerald-400">الإجابة الشرعية المتأصلة:</label>
-                    <div className="flex gap-2">
+                    {/* <div className="flex gap-2">
                        <button 
                         type="button" 
                         onClick={handleDraftAnswer} 
@@ -387,7 +387,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                         <Sparkles size={16} className={isDrafting ? 'animate-spin' : ''} />
                         {isDrafting ? 'جاري الصياغة...' : 'مسودة ذكاء اصطناعي'}
                       </button>
-                    </div>
+                    </div> */}
                  </div>
                  
                  {/* حاوية المحرر المنسقة لتفعيل الـ RTL والتصميم الجديد */}
