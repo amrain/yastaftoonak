@@ -17,3 +17,100 @@
 body {
   font-family: 'AdwaAssalaf', 'Tajawal', sans-serif;
 }
+
+/* ==========================================================================
+   تنسيق محرر النصوص المخصص (ReactQuill) لدعم العربية والـ Dark Mode بالكامل
+   ========================================================================== */
+
+/* 1. التنسيق العام للحاوية والاتجاه */
+.admin-rich-editor {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* 2. شريط الأدوات العلوي (Toolbar) */
+.admin-rich-editor .ql-toolbar.ql-snow {
+  border: 1px solid #e2e8f0 !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  background-color: #f8fafc !important;
+  padding: 10px !important;
+  text-align: right !important;
+}
+
+/* محاذاة أزرار شريط الأدوات من اليمين داخل فليكس الحزمة */
+.admin-rich-editor .ql-toolbar.ql-snow .ql-formats {
+  direction: rtl !important;
+  text-align: right !important;
+  float: right !important;
+}
+
+/* 3. صندوق حاوية النص (Container) */
+.admin-rich-editor .ql-container.ql-snow {
+  border: 1px solid #e2e8f0 !important;
+  border-bottom-left-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+  min-height: 200px !important;
+}
+
+/* 4. منطقة الكتابة الداخلية (Editor Area) */
+.admin-rich-editor .ql-editor {
+  direction: rtl !important;
+  text-align: right !important;
+  font-family: 'Tajawal', sans-serif !important;
+  font-size: 17px !important;
+  line-height: 1.8 !important;
+  min-height: 200px !important;
+}
+
+/* ضبط النص التوضيحي الافتراضي (Placeholder) من اليمين */
+.admin-rich-editor .ql-editor.ql-blank::before {
+  right: 15px !important;
+  left: auto !important;
+  font-style: normal !important;
+  color: #94a3b8 !important;
+}
+
+/* 5. تنسيق المحرر ليدعم الـ Dark Mode تلقائياً وبشكل كامل */
+.dark .admin-rich-editor .ql-toolbar.ql-snow {
+  background-color: #1f2937 !important; /* gray-800 */
+  border-color: #374151 !important;    /* gray-700 */
+}
+
+.dark .admin-rich-editor .ql-toolbar .ql-stroke {
+  stroke: #e5e7eb !important;           /* gray-200 */
+}
+
+.dark .admin-rich-editor .ql-toolbar .ql-fill {
+  fill: #e5e7eb !important;
+}
+
+.dark .admin-rich-editor .ql-toolbar .ql-picker {
+  color: #e5e7eb !important;
+}
+
+.dark .admin-rich-editor .ql-container.ql-snow {
+  border-color: #374151 !important;
+  background-color: #111827 !important; /* gray-900 */
+  color: #f3f4f6 !important;           /* gray-100 */
+}
+
+/* تنسيق شريط الأدوات القديم للمحافظة على التوافقية */
+.dark .ql-toolbar {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+.dark .ql-toolbar .ql-stroke {
+  stroke: #e5e7eb !important;
+}
+.dark .ql-toolbar .ql-fill {
+  fill: #e5e7eb !important;
+}
+.dark .ql-toolbar .ql-picker {
+  color: #e5e7eb !important;
+}
+.dark .ql-container {
+  border-color: #374151 !important;
+  background-color: #111827 !important;
+  color: #f3f4f6 !important;
+}

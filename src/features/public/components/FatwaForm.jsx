@@ -50,9 +50,10 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
     <>
       <div id="fatwa-form" className={`max-w-4xl mx-auto -mt-12 relative z-20 ${themeColors.card} rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md shadow-2xl p-6 md:p-10 border-t-4 border-amber-500 border-r border-l border-b border-gray-100 dark:border-gray-700`}>
         <div className="text-center mb-10">
-          <h2 className={`text-4xl font-bold ${themeColors.primaryText} mb-3 font-reem`}>اطرح فتواك</h2>
+          <h2 className={`text-4xl font-bold ${themeColors.primaryText} mb-3 font-reem`}>اطرح سؤالك</h2>
           <div className="w-16 h-1 bg-amber-400 mx-auto mb-4 rounded-full" />
-          <p className={themeColors.textMuted}>سيتم مراجعة الفتوى والإجابة عليها من قبل اللجنة المختصة في أقرب وقت.</p>
+         
+          <p className={themeColors.textMuted}> تُراجع الفتوى ويُجاب عنها من اللجنة المختصة في أقرب وقت</p>
           {/* تم حذف السطر الذي كان هنا (الحقول المميزة مطلوبة) */}
         </div>
 
@@ -109,7 +110,7 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
           </div>
 
           <div className={`bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border ${themeColors.border}`}>
-            <label className={`block mb-3 text-sm font-medium ${themeColors.textMain}`}>هل تود نشر الفتوى على الموقع لتعميم الفائدة؟</label>
+            <label className={`block mb-3 text-sm font-medium ${themeColors.textMain}`}>أتوافق على نشر الفتوى على الموقع لتعميم الفائدة؟</label>
             <div className="flex flex-col sm:flex-row gap-4 mb-2">
               <label className="flex items-center cursor-pointer">
                 <input type="radio" name="publish" checked={formData.wantsToPublish} onChange={() => setFormData({ ...formData, wantsToPublish: true })} className="ml-2 w-4 h-4 text-emerald-600 focus:ring-emerald-500" />
@@ -121,14 +122,23 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
               </label>
             </div>
 
-            {!formData.wantsToPublish && (
+            {/* {!formData.wantsToPublish && (
               <div className={`mt-4 pt-4 border-t ${themeColors.border} animate-in fade-in slide-in-from-top-2 duration-300`}>
                 <label className={`block mb-2 text-sm font-medium ${themeColors.textMain}`}>
                   البريد الإلكتروني <RequiredStar />
                 </label>
                 <input type="email" required value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none`} placeholder="example@domain.com" dir="ltr" />
               </div>
-            )}
+            )} */}
+
+            
+              <div className={`mt-4 pt-4 border-t ${themeColors.border} animate-in fade-in slide-in-from-top-2 duration-300`}>
+                <label className={`block mb-2 text-sm font-medium ${themeColors.textMain}`}>
+                  البريد الإلكتروني <RequiredStar />
+                </label>
+                <input type="email" required value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none`} placeholder="example@domain.com" dir="ltr" />
+              </div>
+            
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg flex items-start text-sm border border-gray-200 dark:border-gray-700">

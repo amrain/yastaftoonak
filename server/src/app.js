@@ -13,6 +13,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'http://147.93.55.203',
   'https://yastaftoonak.com',
   process.env.CLIENT_URL // سيقرأ الرابط الذي وضعته في هوستنجر تلقائياً
 ];

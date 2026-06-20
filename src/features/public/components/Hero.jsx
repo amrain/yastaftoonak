@@ -19,7 +19,7 @@ function Hero() {
           يستفتونك
         </h1>
         <p className="text-xl md:text-2xl text-amber-50 mb-10 max-w-2xl mx-auto leading-relaxed font-tajawal drop-shadow">
-          منصة شرعية موثوقة لاستقبال الفتاوى والإجابة عليها وفق الكتاب والسنة، بإشراف ثلة من علماء ودعاة غزة.
+          منصة شرعية موثوقة لاستقبال الفتاوى والإجابة عنها وفق الكتاب والسنة، بإشراف ثلة من علماء غزة ودعاتها.
         </p>
         <div className="flex justify-center">
           <button
