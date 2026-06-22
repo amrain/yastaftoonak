@@ -63,7 +63,7 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
               <label className={`block mb-2 text-sm font-medium ${themeColors.textMain}`}>
                 الاسم <RequiredStar />
               </label>
-              <input type="text" required value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none`} placeholder="الاسم أو الكنية" />
+              <input type="text" required value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none`} placeholder="الاسم أو الكنية" dir="rtl" />
             </div>
 
             <div>
@@ -77,11 +77,12 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
               <label className={`block mb-2 text-sm font-medium ${themeColors.textMain}`}>
                 الجنس <RequiredStar />
               </label>
-              <select 
-                required 
-                value={formData.gender} 
-                onChange={(event) => setFormData({ ...formData, gender: event.target.value })} 
+              <select
+                required
+                value={formData.gender}
+                onChange={(event) => setFormData({ ...formData, gender: event.target.value })}
                 className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none`}
+                dir="rtl"
               >
                 <option value="" disabled hidden className="dark:bg-gray-800 text-gray-400">اختر الجنس</option>
                 <option value="ذكر" className="dark:bg-gray-800">ذكر</option>
@@ -93,7 +94,7 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
               <label className={`block mb-2 text-sm font-medium ${themeColors.textMain}`}>
                 مكان الإقامة <RequiredStar />
               </label>
-              <select required value={formData.location} onChange={(event) => setFormData({ ...formData, location: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none`}>
+              <select required value={formData.location} onChange={(event) => setFormData({ ...formData, location: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none`} dir="rtl">
                 <option value="" disabled hidden className="dark:bg-gray-800">اختر مكان الإقامة</option>
                 {LOCATIONS.map((location) => (
                   <option key={location} className="dark:bg-gray-800">{location}</option>
@@ -106,7 +107,7 @@ function FatwaForm({ createFatwa, setShowSuccessModal, showSuccessModal, themeCo
             <label className={`block mb-2 text-sm font-medium ${themeColors.textMain}`}>
               نص السؤال <RequiredStar />
             </label>
-            <textarea required rows="5" value={formData.question} onChange={(event) => setFormData({ ...formData, question: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none resize-none`} placeholder="اكتب تفاصيل سؤالك هنا بوضوح..." />
+            <textarea required rows="5" value={formData.question} onChange={(event) => setFormData({ ...formData, question: event.target.value })} className={`w-full p-3 rounded-lg border ${themeColors.border} bg-transparent ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none resize-none`} placeholder="اكتب تفاصيل سؤالك هنا بوضوح..." dir="rtl" style={{ wordBreak: 'break-word' }} />
           </div>
 
           <div className={`bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border ${themeColors.border}`}>

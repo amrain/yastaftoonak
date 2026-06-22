@@ -90,10 +90,10 @@ export function FatwaLinkParser({ text, fatwas = [], className = '' }) {
   };
 
   return (
-    <div 
-      dir="rtl" 
-      className={`ql-editor p-0 text-right w-full block rtl ${className}`}
-      style={{ textAlign: 'right', direction: 'rtl' }}
+    <div
+      dir="rtl"
+      className={`ql-editor p-0 text-justify w-full block rtl ${className}`}
+      style={{ textAlign: 'right', direction: 'rtl', wordBreak: 'break-word', overflowWrap: 'break-word' }}
     >
       {parseFatwaLinks(text)}
     </div>

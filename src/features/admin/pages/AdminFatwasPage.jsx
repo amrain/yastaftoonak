@@ -20,7 +20,13 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
   const [aiAdminError, setAiAdminError] = useState('');
   const [fatwaToDelete, setFatwaToDelete] = useState(null);
 
-  // إعداد شريط الأدوات المخصص ليدعم محاذاة واتجاه الـ RTL بشكل برمجي ممتاز
+  // نصوص جاهزة سريعة للمشايخ
+  const quickTexts = [
+    { label: "البسملة والمقدمة", text: "<p dir='rtl'>الحمد لله، والصلاة والسلام على رسول الله وعلى آله وصحبه ومن والاه، وبعد..</p>" },
+    { label: "والله أعلم", text: "<p dir='rtl'>هذا، والله تعالى أعلى وأعلم.</p>" },
+    { label: "الدعاء بالصلاح", text: "<p dir='rtl'>نسأل الله لنا ولكم التوفيق والسداد، وصلاح السريرة والعلانية.</p>" }
+  ];
+
   const quillModules = {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
@@ -60,6 +66,15 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
     });
   };
 
+  // إدراج النص الجاهز داخل المحرر
+  const insertQuickText = (text) => {
+    setReplyData((prev) => ({
+      ...prev,
+      // دمج النص الجديد مع النص القديم
+      answer: prev.answer ? prev.answer + text : text
+    }));
+  };
+
   const openGmailReply = () => {
     if (!selectedFatwa?.email) {
       addToast('لا يوجد بريد إلكتروني لهذه الفتوى.', 'error');
@@ -81,29 +96,21 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
     }
   };
 
-  const handleDraftAnswer = async () => {
-    setIsDrafting(true);
-    setAiAdminError('');
-    try {
-      const prompt = `أنت مساعد باحث لمفتي شرعي. اكتب مسودة إجابة شرعية متأصلة ومختصرة جداً بناءً على المذاهب الأربعة (أو الراجح منها) لهذا السؤال، لكي يراجعها المفتي قبل نشرها. اكتب الجواب مباشرة بدون مقدمات طويلة، واذكر دليلاً إن أمكن باختصار. السؤال: "${selectedFatwa.question}"`;
-      const draft = await callGeminiAPI(prompt);
-      setReplyData((current) => ({ ...current, answer: `<p dir="rtl">${draft.trim()}</p>` }));
-      addToast('تم إنشاء مسودة أولية للإجابة.', 'success');
-    } catch (error) {
-      setAiAdminError(error.message);
-      addToast(error.message, 'error');
-    } finally {
-      setIsDrafting(false);
-    }
-  };
-
   const saveReply = async () => {
     try {
+      // إرسال البيانات مع إشارة للـ backend لإرسال الإيميل تلقائياً في الخلفية (نرسل sendEmail: true)
       await saveFatwaReply(selectedFatwa.id, {
         ...replyData,
         answeredBy: replyData.answeredBy || currentUser.name,
+        sendEmail: !!selectedFatwa.email, // علامة للباكيند ليقوم بالإرسال الآلي فوراً عبر الـ SMTP الخاص بالسيرفر
       });
-      addToast('تم حفظ الرد بنجاح.', 'success');
+
+      let successMsg = 'تم حفظ الرد بنجاح.';
+      if (selectedFatwa.email) {
+        successMsg += ' وجاري إرسال نسخة تلقائية لإيميل المستفتي.';
+      }
+
+      addToast(successMsg, 'success');
       setSelectedFatwa(null);
     } catch (error) {
       addToast(error.message, 'error');
@@ -323,7 +330,7 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
               {/* User Info Card */}
               <div className="bg-emerald-50/30 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 p-5 rounded-2xl grid grid-cols-2 md:grid-cols-5 gap-6 text-sm">
                 <div className="space-y-1">
-                   <p className="text-gray-400 font-bold flex items-center gap-1"><UserIcon size={14}/> السائل</p>
+                   <p className="text-gray-400 font-bold flex items-center gap-1"><UserIcon size={14}/> :السائل</p>
                    <p className="font-black text-emerald-800 dark:text-emerald-300">{selectedFatwa.name || 'مجهول'}</p>
                 </div>
                 <div className="space-y-1 col-span-1 md:col-span-1">
@@ -356,9 +363,9 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                     type="button"
                     onClick={openGmailReply}
                     className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 font-black hover:bg-amber-50 dark:hover:bg-amber-900/20 transition"
-                    title="يفتح Gmail مع تعبئة البريد ونص الإجابة"
+                    title="يفتح Gmail كخيار احتياطي يدوي"
                   >
-                    فتح Gmail للرد <ExternalLink size={16} />
+                    فتح يدوي في Gmail <ExternalLink size={16} />
                   </button>
                 </div>
               )}
@@ -375,20 +382,24 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
 
               {/* Answer Section */}
               <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <label className="text-lg font-black text-emerald-900 dark:text-emerald-400">الإجابة الشرعية المتأصلة:</label>
-                    {/* <div className="flex gap-2">
-                       <button 
-                        type="button" 
-                        onClick={handleDraftAnswer} 
-                        disabled={isDrafting} 
-                        className="flex items-center gap-2 text-sm font-black bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl shadow-lg transition-all disabled:opacity-50"
-                      >
-                        <Sparkles size={16} className={isDrafting ? 'animate-spin' : ''} />
-                        {isDrafting ? 'جاري الصياغة...' : 'مسودة ذكاء اصطناعي'}
-                      </button>
-                    </div> */}
-                 </div>
+                </div>
+
+                {/* 2. شريط الاقتراحات الجاهزة والنصوص المتكررة فوق المحرر */}
+                <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-900/60 rounded-xl border border-gray-200/60">
+                  <span className="text-xs text-gray-400 w-full mb-1 font-bold"> نصوص سريعة :</span>
+                  {quickTexts.map((item, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => insertQuickText(item.text)}
+                      className="px-3 py-1.5 text-xs font-bold bg-white dark:bg-gray-800 text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/60 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-all shadow-sm active:scale-95"
+                    >
+                      + {item.label}
+                    </button>
+                  ))}
+                </div>
                  
                  {/* حاوية المحرر المنسقة لتفعيل الـ RTL والتصميم الجديد */}
                  <div className="admin-rich-editor bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -496,15 +507,15 @@ export default AdminFatwasPage;
 //   const [aiAdminError, setAiAdminError] = useState('');
 //   const [fatwaToDelete, setFatwaToDelete] = useState(null);
 
-//   // 2. إعداد أزرار شريط الأدوات المخصصة والمبسطة لتناسب الشيوخ
+//   // إعداد شريط الأدوات المخصص ليدعم محاذاة واتجاه الـ RTL بشكل برمجي ممتاز
 //   const quillModules = {
 //     toolbar: [
 //       [{ 'header': [1, 2, 3, false] }],
 //       ['bold', 'italic', 'underline'],
 //       [{ 'color': [] }, { 'background': [] }],
-//       [{ 'direction': 'rtl' }], // يدعم الكتابة من اليمين لليسار افتراضياً
+//       [{ 'direction': 'rtl' }], 
 //       [{ 'align': [] }],
-//       ['clean'] // زر مسح التنسيق
+//       ['clean'] 
 //     ],
 //   };
 
@@ -543,7 +554,6 @@ export default AdminFatwasPage;
 //     }
 
 //     const subject = `رد على فتوى رقم #${selectedFatwa.serialNumber ?? selectedFatwa.id ?? '—'}`;
-//     // ملاحظة: بما أن النص يحتوي على وسوم HTML من المحرر، يفضل تنظيفه هنا قبل إرساله للـ Gmail البسيط
 //     const strippedAnswer = replyData.answer.replace(/<[^>]*>/g, '');
 //     const body = `السلام عليكم ورحمة الله وبركاته،\n\nبخصوص سؤالكم الموقر:\n"${selectedFatwa.question || ''}"\n\nإليكم الإجابة الشرعية:\n${strippedAnswer || ''}\n\nالجهة المجيبة: ${replyData.answeredBy || 'غير محدد'}\n\nنسأل الله لنا ولكم التوفيق.`;
 
@@ -564,7 +574,6 @@ export default AdminFatwasPage;
 //     try {
 //       const prompt = `أنت مساعد باحث لمفتي شرعي. اكتب مسودة إجابة شرعية متأصلة ومختصرة جداً بناءً على المذاهب الأربعة (أو الراجح منها) لهذا السؤال، لكي يراجعها المفتي قبل نشرها. اكتب الجواب مباشرة بدون مقدمات طويلة، واذكر دليلاً إن أمكن باختصار. السؤال: "${selectedFatwa.question}"`;
 //       const draft = await callGeminiAPI(prompt);
-//       // لف النص ببرقراف ليقبله المحرر كشكل منسق افتراضي
 //       setReplyData((current) => ({ ...current, answer: `<p dir="rtl">${draft.trim()}</p>` }));
 //       addToast('تم إنشاء مسودة أولية للإجابة.', 'success');
 //     } catch (error) {
@@ -855,7 +864,7 @@ export default AdminFatwasPage;
 //               <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
 //                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 //                     <label className="text-lg font-black text-emerald-900 dark:text-emerald-400">الإجابة الشرعية المتأصلة:</label>
-//                     <div className="flex gap-2">
+//                     {/* <div className="flex gap-2">
 //                        <button 
 //                         type="button" 
 //                         onClick={handleDraftAnswer} 
@@ -865,10 +874,10 @@ export default AdminFatwasPage;
 //                         <Sparkles size={16} className={isDrafting ? 'animate-spin' : ''} />
 //                         {isDrafting ? 'جاري الصياغة...' : 'مسودة ذكاء اصطناعي'}
 //                       </button>
-//                     </div>
+//                     </div> */}
 //                  </div>
                  
-//                  {/* 3. استبدال الـ textarea بمحرر النصوص الذكي ReactQuill */}
+//                  {/* حاوية المحرر المنسقة لتفعيل الـ RTL والتصميم الجديد */}
 //                  <div className="admin-rich-editor bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 //                     <ReactQuill 
 //                       theme="snow"
@@ -877,7 +886,6 @@ export default AdminFatwasPage;
 //                       modules={quillModules}
 //                       formats={quillFormats}
 //                       placeholder="اكتب الجواب الشرعي المنسق هنا..."
-//                       className="text-lg min-h-[250px]"
 //                     />
 //                  </div>
 //                 {aiAdminError && <p className="text-red-500 text-xs font-bold">{aiAdminError}</p>}
@@ -953,454 +961,3 @@ export default AdminFatwasPage;
 // }
 
 // export default AdminFatwasPage;
-// // import { Download, Sparkles, XCircle, MessageSquare, CheckCircle, FileText, User as UserIcon, MapPin, Calendar, Clock, Filter, Mail, ExternalLink } from 'lucide-react';
-// // import { useMemo, useState } from 'react';
-// // import { callGeminiAPI } from '../../../app/services/gemini';
-// // import ConfirmDialog from '../../../shared/ui/ConfirmDialog';
-// // import { useToast } from '../../../shared/ui/ToastProvider';
-// // function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply, categories = [] }) {
-// //   const { addToast } = useToast();
-// //   const [selectedFatwa, setSelectedFatwa] = useState(null);
-// //   const [replyData, setReplyData] = useState({ answer: '', category: '', status: 'published' });
-// //   const [filterStatus, setFilterStatus] = useState('all');
-// //   const [filterCat, setFilterCat] = useState('all');
-// //   const [isDrafting, setIsDrafting] = useState(false);
-// //   const [aiAdminError, setAiAdminError] = useState('');
-// //   const [fatwaToDelete, setFatwaToDelete] = useState(null);
-
-// //   const displayedFatwas = useMemo(
-// //     () =>
-// //       fatwas.filter((fatwa) => {
-// //         const statusMatch =
-// //           filterStatus === 'all' ||
-// //           (filterStatus === 'new' && fatwa.status === 'new') ||
-// //           (filterStatus === 'answered' && fatwa.status !== 'new');
-// //         const categoryMatch = filterCat === 'all' || fatwa.category === filterCat;
-// //         return statusMatch && categoryMatch;
-// //       }),
-// //     [fatwas, filterStatus, filterCat],
-// //   );
-
-// //   const openModal = (fatwa) => {
-// //     setSelectedFatwa(fatwa);
-// //     setAiAdminError('');
-// //     setReplyData({
-// //       answer: fatwa.answer || '',
-// //       category: fatwa.category || (categories.length > 0 ? categories[0].name : ''),
-// //       status: fatwa.status === 'answered' ? 'answered' : 'published',
-// //       answeredBy: fatwa.answeredBy || currentUser.name || '',
-// //     });
-// //   };
-
-// //   const openGmailReply = () => {
-// //     if (!selectedFatwa?.email) {
-// //       addToast('لا يوجد بريد إلكتروني لهذه الفتوى.', 'error');
-// //       return;
-// //     }
-
-// //     const subject = `رد على فتوى رقم #${selectedFatwa.serialNumber ?? selectedFatwa.id ?? '—'}`;
-// //     const body = `السلام عليكم ورحمة الله وبركاته،\n\nبخصوص سؤالكم الموقر:\n"${selectedFatwa.question || ''}"\n\nإليكم الإجابة الشرعية:\n${replyData.answer || ''}\n\nالجهة المجيبة: ${replyData.answeredBy || 'غير محدد'}\n\nنسأل الله لنا ولكم التوفيق.`;
-
-// //     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-// //     if (isMobile) {
-// //       const mailtoUrl = `mailto:${encodeURIComponent(selectedFatwa.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-// //       window.open(mailtoUrl, '_blank');
-// //     } else {
-// //       const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(selectedFatwa.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-// //       window.open(gmailUrl, '_blank', 'noopener,noreferrer');
-// //     }
-// //   };
-
-// //   const handleDraftAnswer = async () => {
-// //     setIsDrafting(true);
-// //     setAiAdminError('');
-// //     try {
-// //       const prompt = `أنت مساعد باحث لمفتي شرعي. اكتب مسودة إجابة شرعية متأصلة ومختصرة جداً بناءً على المذاهب الأربعة (أو الراجح منها) لهذا السؤال، لكي يراجعها المفتي قبل نشرها. اكتب الجواب مباشرة بدون مقدمات طويلة، واذكر دليلاً إن أمكن باختصار. السؤال: "${selectedFatwa.question}"`;
-// //       const draft = await callGeminiAPI(prompt);
-// //       setReplyData((current) => ({ ...current, answer: draft.trim() }));
-// //       addToast('تم إنشاء مسودة أولية للإجابة.', 'success');
-// //     } catch (error) {
-// //       setAiAdminError(error.message);
-// //       addToast(error.message, 'error');
-// //     } finally {
-// //       setIsDrafting(false);
-// //     }
-// //   };
-
-// //   const saveReply = async () => {
-// //     try {
-// //       await saveFatwaReply(selectedFatwa.id, {
-// //         ...replyData,
-// //         answeredBy: replyData.answeredBy || currentUser.name,
-// //       });
-// //       addToast('تم حفظ الرد بنجاح.', 'success');
-// //       setSelectedFatwa(null);
-// //     } catch (error) {
-// //       addToast(error.message, 'error');
-// //     }
-// //   };
-
-// //   const deleteFatwa = async () => {
-// //     try {
-// //       await deleteFatwaById(fatwaToDelete.id);
-// //       addToast('تم حذف الفتوى.', 'success');
-// //     } catch (error) {
-// //       addToast(error.message, 'error');
-// //     } finally {
-// //       setFatwaToDelete(null);
-// //     }
-// //   };
-
-// //   const exportCSV = () => {
-// //     const headers = ['الرقم التسلسلي', 'الاسم', 'الايميل', 'العمر', 'الجنس', 'المكان', 'السؤال', 'الجواب', 'التصنيف', 'الحالة', 'التاريخ', 'الجهة المجيبة'];
-// //     const rows = displayedFatwas.map((fatwa) => [
-// //       fatwa.serialNumber ?? '',
-// //       fatwa.name || 'مجهول',
-// //       fatwa.email || 'لا يوجد',
-// //       fatwa.age,
-// //       fatwa.gender,
-// //       fatwa.location,
-// //       `"${(fatwa.question || '').replace(/"/g, '""')}"`,
-// //       `"${(fatwa.answer || '').replace(/"/g, '""')}"`,
-// //       fatwa.category,
-// //       fatwa.status,
-// //       fatwa.date,
-// //       fatwa.answeredBy || '',
-// //     ]);
-// //     const csvContent = `data:text/csv;charset=utf-8,\uFEFF${[headers.join(','), ...rows.map((row) => row.join(','))].join('\n')}`;
-// //     const encodedUri = encodeURI(csvContent);
-// //     const link = document.createElement('a');
-// //     link.setAttribute('href', encodedUri);
-// //     link.setAttribute('download', 'fatwas_export.xlsx');
-// //     document.body.appendChild(link);
-// //     link.click();
-// //     document.body.removeChild(link);
-// //   };
-
-// //   return (
-// //     <div className="space-y-6 font-tajawal pb-10" dir="rtl">
-// //       {/* Header */}
-// //       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-// //         <div>
-// //           <h2 className="text-3xl font-black text-emerald-900 dark:text-emerald-400">سجل الفتاوى</h2>
-// //           <p className="text-gray-500 dark:text-gray-400 mt-1">إدارة الطلبات الواردة والإجابة عليها شرعياً</p>
-// //         </div>
-// //         <button 
-// //           onClick={exportCSV} 
-// //           className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 px-5 py-2.5 rounded-xl shadow-sm hover:bg-emerald-50 transition-all font-bold"
-// //         >
-// //           <Download size={20} /> تصدير البيانات (Excel)
-// //         </button>
-// //       </div>
-
-// //       {/* Filters Bar */}
-// //       <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col lg:flex-row gap-4">
-// //         <div className="flex bg-gray-100 dark:bg-gray-900/50 p-1.5 rounded-xl border border-gray-200 dark:border-gray-700 w-fit">
-// //           <button 
-// //             onClick={() => setFilterStatus('all')} 
-// //             className={`px-6 py-2 rounded-lg text-sm font-black transition-all ${filterStatus === 'all' ? 'bg-white dark:bg-gray-700 shadow-md text-emerald-700 dark:text-emerald-400' : 'text-gray-500 hover:text-gray-700'}`}
-// //           >
-// //             الكل
-// //           </button>
-// //           <button 
-// //             onClick={() => setFilterStatus('new')} 
-// //             className={`px-6 py-2 rounded-lg text-sm font-black transition-all flex items-center gap-2 ${filterStatus === 'new' ? 'bg-white dark:bg-gray-700 shadow-md text-amber-600' : 'text-gray-500 hover:text-amber-500'}`}
-// //           >
-// //             بانتظار الرد
-// //             {fatwas.filter(f => f.status === 'new').length > 0 && (
-// //               <span className="bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse">
-// //                 {fatwas.filter(f => f.status === 'new').length}
-// //               </span>
-// //             )}
-// //           </button>
-// //           <button 
-// //             onClick={() => setFilterStatus('answered')} 
-// //             className={`px-6 py-2 rounded-lg text-sm font-black transition-all ${filterStatus === 'answered' ? 'bg-white dark:bg-gray-700 shadow-md text-emerald-700 dark:text-emerald-400' : 'text-gray-500 hover:text-gray-700'}`}
-// //           >
-// //             تم الرد
-// //           </button>
-// //         </div>
-
-// //         <div className="hidden lg:block flex-1" />
-
-// //         <div className="flex items-center gap-2">
-// //             <Filter size={18} className="text-gray-400" />
-// //             <select 
-// //               value={filterCat} 
-// //               onChange={(e) => setFilterCat(e.target.value)} 
-// //               className="min-w-[200px] p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-// //             >
-// //               <option value="all">جميع التصنيفات</option>
-// //               {categories.map((cat) => (
-// //                 <option key={cat.id || cat._id} value={cat.name}>{cat.name}</option>
-// //               ))}
-// //             </select>
-// //         </div>
-// //       </div>
-
-// //       {/* Main Table */}
-// //       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-// //         <div className="overflow-x-auto">
-// //           <table className="w-full border-collapse">
-// //             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600 text-gray-500">
-// //               <tr>
-// //                 <th className="p-5 font-bold text-sm text-center">رقم الفتوى</th>
-// //                 <th className="p-5 font-bold text-sm text-right">المستفتي</th>
-// //                 <th className="p-5 font-bold text-sm text-right">موضوع السؤال</th>
-// //                 <th className="p-5 font-bold text-sm text-center">الحالة</th>
-// //                 <th className="p-5 font-bold text-sm text-right">التصنيف</th>
-// //                 <th className="p-5 font-bold text-sm text-center">إجراءات</th>
-// //               </tr>
-// //             </thead>
-// //             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-// //               {displayedFatwas.length > 0 ? (
-// //                 displayedFatwas.map((fatwa) => (
-// //                   <tr key={fatwa.id} className="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/5 transition-colors group">
-// //                     <td className="p-5 text-center font-black text-emerald-800 dark:text-emerald-300">
-// //                       {fatwa.serialNumber != null ? `#${fatwa.serialNumber}` : '—'}
-// //                     </td>
-// //                     <td className="p-5 text-right">
-// //                       <div className="flex items-center gap-3">
-// //                         <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-700 shrink-0">
-// //                            <UserIcon size={18} />
-// //                         </div>
-// //                         <div className="min-w-0">
-// //                           <div className="font-bold text-gray-800 dark:text-gray-200 truncate">{fatwa.name || 'مجهول'}</div>
-// //                           <div className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
-// //                             <MapPin size={10} /> {fatwa.location} • {fatwa.age} سنة
-// //                           </div>
-// //                           {/* عرض البريد في الجدول بشكل مصغر */}
-// //                           {fatwa.email && <div className="text-[10px] text-emerald-600 font-bold mt-1 flex items-center gap-1"><Mail size={8}/> {fatwa.email}</div>}
-// //                         </div>
-// //                       </div>
-// //                     </td>
-// //                     <td className="p-5 text-right">
-// //                       <div className="max-w-xs xl:max-w-md">
-// //                         <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed" title={fatwa.question}>
-// //                           {fatwa.question}
-// //                         </p>
-// //                       </div>
-// //                     </td>
-// //                     <td className="p-5 text-center">
-// //                       <span className={`inline-flex px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${
-// //                         fatwa.status === 'new' ? 'bg-amber-100 text-amber-700' : 
-// //                         fatwa.status === 'published' ? 'bg-emerald-100 text-emerald-700' : 
-// //                         fatwa.status === 'answered' ? 'bg-blue-100 text-blue-700' :
-// //                         'bg-gray-100 text-gray-600'
-// //                       }`}>
-// //                         {fatwa.status === 'new' ? 'جديدة' : fatwa.status === 'published' ? 'منشورة' : fatwa.status === 'answered' ? 'رد خاص' : 'غير معروفة'}
-// //                       </span>
-// //                       {fatwa.answeredBy && (
-// //                         <div className="text-[9px] text-emerald-600 mt-1.5 flex items-center justify-center gap-1">
-// //                           <CheckCircle size={10} /> الجهة المجيبة: {fatwa.answeredBy}
-// //                         </div>
-// //                       )}
-// //                     </td>
-// //                     <td className="p-5 text-right">
-// //                       <span className="text-sm font-medium text-gray-500 bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded">
-// //                         {fatwa.category || 'غير مصنف'}
-// //                       </span>
-// //                     </td>
-// //                     <td className="p-5 text-center">
-// //                       <div className="flex items-center justify-center gap-3">
-// //                         <button 
-// //                           onClick={() => openModal(fatwa)} 
-// //                           className="text-emerald-600 hover:text-emerald-700 font-black text-sm flex items-center gap-1"
-// //                         >
-// //                           <MessageSquare size={16} /> رد
-// //                         </button>
-// //                         <button 
-// //                           onClick={() => setFatwaToDelete(fatwa)} 
-// //                           className="text-red-400 hover:text-red-600 transition-colors"
-// //                         >
-// //                           <XCircle size={18} />
-// //                         </button>
-// //                       </div>
-// //                     </td>
-// //                   </tr>
-// //                 ))
-// //               ) : (
-// //                 <tr>
-// //                   <td colSpan="6" className="p-20 text-center text-gray-500">
-// //                     <div className="flex flex-col items-center opacity-40">
-// //                       <FileText size={48} className="mb-2" />
-// //                       <p className="text-lg font-bold">لا توجد فتاوى حالياً</p>
-// //                     </div>
-// //                   </td>
-// //                 </tr>
-// //               )}
-// //             </tbody>
-// //           </table>
-// //         </div>
-// //       </div>
-
-// //       {/* Reply Modal */}
-// //       {selectedFatwa && (
-// //         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-// //           <div className="bg-white dark:bg-gray-800 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all animate-in zoom-in-95" dir="rtl">
-// //             <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-emerald-50/50 dark:bg-gray-700/50">
-// //               <div className="flex items-center gap-3 font-bold text-emerald-900 dark:text-emerald-400 text-xl">
-// //                  <div className="bg-emerald-600 text-white p-2 rounded-xl shadow-lg shadow-emerald-200">
-// //                     <MessageSquare size={20} />
-// //                  </div>
-// //                  الرد على الفتوى #{selectedFatwa.serialNumber ?? '—'}
-// //               </div>
-// //               <button onClick={() => setSelectedFatwa(null)} className="text-gray-400 hover:text-red-500 transition-colors">
-// //                 <XCircle size={28} />
-// //               </button>
-// //             </div>
-
-// //             <div className="p-8 overflow-y-auto flex-1 space-y-8">
-// //               {/* User Info Card - تم إضافة الإيميل هنا */}
-// //               <div className="bg-emerald-50/30 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 p-5 rounded-2xl grid grid-cols-2 md:grid-cols-5 gap-6 text-sm">
-// //                 <div className="space-y-1">
-// //                    <p className="text-gray-400 font-bold flex items-center gap-1"><UserIcon size={14}/> السائل</p>
-// //                    <p className="font-black text-emerald-800 dark:text-emerald-300">{selectedFatwa.name || 'مجهول'}</p>
-// //                 </div>
-// //                 <div className="space-y-1 col-span-1 md:col-span-1">
-// //                    <p className="text-gray-400 font-bold flex items-center gap-1"><Mail size={14}/> البريد الإلكتروني</p>
-// //                    <p className="font-black text-blue-600 dark:text-blue-400 break-all">{selectedFatwa.email || 'لا يوجد إيميل'}</p>
-// //                 </div>
-// //                 <div className="space-y-1">
-// //                    <p className="text-gray-400 font-bold flex items-center gap-1"><MapPin size={14}/> المنطقة</p>
-// //                    <p className="font-black">{selectedFatwa.location}</p>
-// //                 </div>
-// //                 <div className="space-y-1">
-// //                    <p className="text-gray-400 font-bold flex items-center gap-1"><Calendar size={14}/> التاريخ</p>
-// //                    <p className="font-black">{selectedFatwa.date}</p>
-// //                 </div>
-// //                 <div className="space-y-1">
-// //                    <p className="text-gray-400 font-bold flex items-center gap-1"><Clock size={14}/> نوع الطلب</p>
-// //                    <span className={`px-2 py-0.5 rounded text-[10px] font-black ${selectedFatwa.wantsToPublish === false ? 'bg-amber-200 text-amber-900' : 'bg-emerald-200 text-emerald-900'}`}>
-// //                     {selectedFatwa.wantsToPublish === false ? 'رد خاص' : 'للنشر العام'}
-// //                    </span>
-// //                 </div>
-// //               </div>
-
-// // {selectedFatwa.email && (
-// //                 <div className="bg-amber-50/60 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-// //                   <div className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-// //                     <Mail size={16} className="text-amber-600 dark:text-amber-400" />
-// //                     البريد: <span className="font-black" dir="ltr">{selectedFatwa.email}</span>
-// //                   </div>
-// //                   <button
-// //                     type="button"
-// //                     onClick={openGmailReply}
-// //                     className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 font-black hover:bg-amber-50 dark:hover:bg-amber-900/20 transition"
-// //                     title="يفتح Gmail مع تعبئة البريد ونص الإجابة"
-// //                   >
-// //                     فتح Gmail للرد <ExternalLink size={16} />
-// //                   </button>
-// //                 </div>
-// //               )}
-// //               {/* Question Text */}
-// //               <div className="space-y-3">
-// //                 <h4 className="font-black text-gray-700 dark:text-gray-300 flex items-center gap-2">
-// //                    <div className="w-1.5 h-6 bg-amber-400 rounded-full" /> نص السؤال الوارد:
-// //                 </h4>
-// //                 <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700 whitespace-pre-wrap text-2xl leading-[2] font-bold text-gray-800 dark:text-gray-200 shadow-inner">
-// //                   "{selectedFatwa.question}"
-// //                 </div>
-// //               </div>
-
-// //               {/* Answer Section */}
-// //               <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-// //                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-// //                     <label className="text-lg font-black text-emerald-900 dark:text-emerald-400">الإجابة الشرعية المتأصلة:</label>
-// //                     <div className="flex gap-2">
-// //                       {/* <button 
-// //                         type="button" 
-// //                         onClick={handleDraftAnswer} 
-// //                         disabled={isDrafting} 
-// //                         className="flex items-center gap-2 text-sm font-black bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl shadow-lg transition-all disabled:opacity-50"
-// //                       >
-// //                         <Sparkles size={16} className={isDrafting ? 'animate-spin' : ''} />
-// //                         {isDrafting ? 'جاري الصياغة...' : 'مسودة ذكاء اصطناعي'}
-// //                       </button> */}
-
-// //                       {/* زر إرسال الإيميل الجديد */}
-// //                       {/* تم حذف زر الإرسال الأزرق */}
-// //                     </div>
-// //                  </div>
-                 
-// //                  <textarea 
-// //                   rows="8" 
-// //                   value={replyData.answer} 
-// //                   onChange={(e) => setReplyData({ ...replyData, answer: e.target.value })} 
-// //                   className="w-full p-5 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all text-lg leading-relaxed shadow-sm" 
-// //                   placeholder="اكتب الجواب الشرعي هنا..." 
-// //                 />
-// //                 {aiAdminError && <p className="text-red-500 text-xs font-bold">{aiAdminError}</p>}
-
-// //                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-// //                   <div className="space-y-2">
-// //                     <label className="text-sm font-bold text-gray-600 dark:text-gray-400">تصنيف الفتوى:</label>
-// //                     <select 
-// //                       value={replyData.category} 
-// //                       onChange={(e) => setReplyData({ ...replyData, category: e.target.value })} 
-// //                       className="w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 font-bold outline-none focus:ring-2 focus:ring-emerald-500"
-// //                     >
-// //                       <option value="">-- اختر التصنيف --</option>
-// //                       {categories.map((cat) => (
-// //                         <option key={cat.id || cat._id} value={cat.name}>{cat.name}</option>
-// //                       ))}
-// //                     </select>
-// //                   </div>
-// //                   <div className="space-y-2">
-// //                     <label className="text-sm font-bold text-gray-600 dark:text-gray-400">قرار النشر:</label>
-// //                     <select 
-// //                       value={replyData.status} 
-// //                       onChange={(e) => setReplyData({ ...replyData, status: e.target.value })} 
-// //                       className="w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 font-bold outline-none focus:ring-2 focus:ring-emerald-500"
-// //                     >
-// //                       <option value="published">✅ نشر للعامة في الأرشيف</option>
-// //                       <option value="answered">🔒 إرسال رد خاص فقط</option>
-// //                     </select>
-// //                   </div>
-// //                   <div className="space-y-2">
-// //                     <label className="text-sm font-bold text-gray-600 dark:text-gray-400">الجهة المجيبة:</label>
-// //                     <input 
-// //                       type="text"
-// //                       value={replyData.answeredBy || ''} 
-// //                       onChange={(e) => setReplyData({ ...replyData, answeredBy: e.target.value })} 
-// //                       className="w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 font-bold outline-none focus:ring-2 focus:ring-emerald-500"
-// //                       placeholder="أدخل اسم الجهة المجيبة"
-// //                     />
-// //                   </div>
-// //                 </div>
-// //               </div>
-// //             </div>
-
-// //             <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-700/50 flex justify-end gap-4">
-// //               <button 
-// //                 onClick={() => setSelectedFatwa(null)} 
-// //                 className="px-8 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-200 transition-all"
-// //               >
-// //                 إغلاق
-// //               </button>
-// //               <button 
-// //                 onClick={saveReply} 
-// //                 className="px-10 py-3 rounded-xl bg-emerald-600 text-white font-black shadow-xl hover:bg-emerald-700 active:scale-95 transition-all"
-// //               >
-// //                 اعتماد الرد وحفظ التغييرات
-// //               </button>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       )}
-
-// //       <ConfirmDialog
-// //         open={Boolean(fatwaToDelete)}
-// //         title="حذف فتوى نهائياً"
-// //         message={fatwaToDelete ? `أنت على وشك حذف فتوى السائل "${fatwaToDelete.name}". هل أنت متأكد؟ هذا الإجراء لا يمكن التراجع عنه.` : ''}
-// //         confirmLabel="تأكيد الحذف"
-// //         cancelLabel="تراجع"
-// //         onCancel={() => setFatwaToDelete(null)}
-// //         onConfirm={deleteFatwa}
-// //       />
-// //     </div>
-// //   );
-// // }
-
-// // export default AdminFatwasPage;

@@ -18,6 +18,28 @@ body {
   font-family: 'AdwaAssalaf', 'Tajawal', sans-serif;
 }
 
+/* RTL and text wrapping support for Arabic */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+[dir="rtl"] p,
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6,
+[dir="rtl"] span,
+[dir="rtl"] div {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 /* ==========================================================================
    تنسيق محرر النصوص المخصص (ReactQuill) لدعم العربية والـ Dark Mode بالكامل
    ========================================================================== */

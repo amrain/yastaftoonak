@@ -40,11 +40,11 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
         <div className="flex flex-col md:flex-row gap-4 mb-10 justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="relative w-full md:w-1/2">
             <Search className={`absolute right-3 top-3 h-5 w-5 ${themeColors.textMuted}`} />
-            <input type="text" placeholder="ابحث في أرشيف الفتاوى..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} className={`w-full pr-10 p-4 rounded-xl border ${themeColors.border} ${themeColors.card} ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm`} />
+            <input type="text" placeholder="ابحث في أرشيف الفتاوى..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} className={`w-full pr-10 p-4 rounded-xl border ${themeColors.border} ${themeColors.card} ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm`} dir="rtl" />
           </div>
           <div className="relative w-full md:w-1/4">
             <Filter className={`absolute right-3 top-3.5 h-5 w-5 ${themeColors.textMuted}`} />
-            <select value={filterCategory} onChange={(event) => setFilterCategory(event.target.value)} className={`w-full pr-10 p-4 rounded-xl border ${themeColors.border} ${themeColors.card} ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none appearance-none shadow-sm`}>
+            <select value={filterCategory} onChange={(event) => setFilterCategory(event.target.value)} className={`w-full pr-10 p-4 rounded-xl border ${themeColors.border} ${themeColors.card} ${themeColors.textMain} focus:ring-2 focus:ring-emerald-500 outline-none appearance-none shadow-sm`} dir="rtl">
               <option value="الكل">جميع التصنيفات</option>
               {categories.map((cat) => (
                 <option key={cat.id || cat._id || cat.name} value={cat.name}>
@@ -74,8 +74,10 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
                   <div className="mb-6 relative flex-1 min-h-[120px]">
                     <div className="absolute -right-2 top-0 bottom-0 w-1 bg-amber-400 rounded-full opacity-60" />
                     <h3
-                      className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-[1.8] text-right px-4 line-clamp-3 overflow-hidden`}
+                      className={`!font-salaf text-xl md:text-2xl font-normal ${themeColors.textMain} leading-[1.8] text-justify px-4 break-words`}
                       title={fatwa.question}
+                      dir="rtl"
+                      style={{ wordBreak: 'break-word', WebkitLineClamp: 3, display: '-webkit-box', WebkitBoxOrient: 'vertical' }}
                     >
                       <span className="text-amber-500 ml-3 font-sans text-sm border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-8 h-8 inline-flex items-center justify-center rounded-full flex-shrink-0 align-middle">
                         س
@@ -108,7 +110,9 @@ function PublishedFatwas({ fatwas, isHomePage, onFatwaClick, onOpenArchive, them
                 </div>
                 <div className="flex-1 px-4 border-r-2 border-transparent group-hover:border-amber-400 transition-colors overflow-hidden">
                   <h3
-                    className={`!font-salaf text-lg md:text-2xl font-normal ${themeColors.textMain} leading-relaxed text-right line-clamp-1`}
+                    className={`!font-salaf text-lg md:text-2xl font-normal ${themeColors.textMain} leading-relaxed text-justify break-words`}
+                    dir="rtl"
+                    style={{ wordBreak: 'break-word' }}
                   >
                     <span className="text-amber-500 ml-3 font-sans text-sm border border-amber-200 bg-amber-50 dark:bg-amber-900/30 w-7 h-7 inline-flex items-center justify-center rounded-full flex-shrink-0">
                       س
