@@ -109,12 +109,34 @@ async function updateFatwa(req, res) {
 
   // جلب بارامتر إرسال الإيميل القادم من الفورنتيند
   const { sendEmail } = req.body;
-
+const plainAnswer = (fatwa.answer || '').replace(/<[^>]*>/g, '');
   if (sendEmail && fatwa.email) {
     const mailOptions = {
       from: `"منصة يستفتونك" <${process.env.EMAIL_USER}>`,
       to: fatwa.email,
       subject: `إجابة طلب الفتوى رقم #${fatwa.serialNumber || fatwa._id}`,
+      text: `السلام عليكم ورحمة الله وبركاته\n\nبخصوص سؤالكم: (${fatwa.question})\n\nالجواب الشرعي:\n${plainAnswer}\n\nالجهة المجيبة: ${fatwa.answeredBy}`,
+  //     html: `
+  //       <div style="direction: rtl; text-align: right; font-family: 'Segoe UI', Tahoma, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+  //   <p style="font-size: 16px; font-weight: bold;">السلام عليكم ورحمة الله وبركاته،</p>
+    
+  //   <p style="font-size: 15px;">بخصوص سؤالكم الوارد عبر منصة يستفتونك:</p>
+    
+  //   <div style="background-color: #f8fafc; padding: 12px; border-right: 3px solid #e2e8f0; margin: 15px 0; color: #475569; font-style: italic;">
+  //     "${fatwa.question}"
+  //   </div>
+    
+  //   <p style="font-size: 16px; font-weight: bold; color: #047857; margin-top: 20px; margin-bottom: 5px;">الجواب الشرعي:</p>
+  //   <div style="font-size: 16px; white-space: pre-line;">
+  //     ${fatwa.answer}
+  //   </div>
+    
+  //   <p style="border-top: 1px solid #f1f5f9; padding-top: 15px; font-size: 13px; color: #94a3b8; margin-top: 30px;">
+  //     الجهة المجيبة: ${fatwa.answeredBy}<br>
+  //     موقع يستفتونك الشرعي
+  //   </p>
+  // </div>
+  //     `
       html: `
         <div style="direction: rtl; text-align: right; font-family: 'Tahoma', 'Segoe UI', sans-serif; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; max-w: 600px; margin: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
           <h2 style="color: #065f46; border-bottom: 2px solid #a7f3d0; padding-bottom: 10px; margin-top: 0;">السلام عليكم ورحمة الله وبركاته</h2>

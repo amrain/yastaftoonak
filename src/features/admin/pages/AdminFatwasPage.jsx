@@ -359,14 +359,14 @@ function AdminFatwasPage({ currentUser, deleteFatwaById, fatwas, saveFatwaReply,
                     <Mail size={16} className="text-amber-600 dark:text-amber-400" />
                     البريد: <span className="font-black" dir="ltr">{selectedFatwa.email}</span>
                   </div>
-                  <button
+                  {/* <button
                     type="button"
                     onClick={openGmailReply}
                     className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 font-black hover:bg-amber-50 dark:hover:bg-amber-900/20 transition"
                     title="يفتح Gmail كخيار احتياطي يدوي"
                   >
                     فتح يدوي في Gmail <ExternalLink size={16} />
-                  </button>
+                  </button> */}
                 </div>
               )}
 
